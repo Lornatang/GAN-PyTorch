@@ -16,3 +16,5 @@ __version__ = "0.1.0"
 
 from .model import Discriminator
 from .model import Generator
+from .utils import weights_init
+
