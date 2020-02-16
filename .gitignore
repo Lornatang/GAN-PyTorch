@@ -132,7 +132,8 @@ dmypy.json
 # custom
 example/data
 example/imgs
-framework/static
+framework/static/mnist
+framework/static/fmnist
 imgs/
 research/data
 checkpoints/
