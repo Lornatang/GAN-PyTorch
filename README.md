@@ -1,5 +1,13 @@
 # GAN-PyTorch
 
+### Update (Feb 16, 2020)
+
+Now you can install this library directly using pip!
+
+```text
+pip install --upgrade gan_pytorch
+```
+
 ### Update (January 29, 2020)
 
 The mnist and fmnist models are now available. Their usage is identical to the other models: 
@@ -42,6 +50,11 @@ We propose a new framework for estimating generative models via an adversarial p
 We have two networks, G (Generator) and D (Discriminator).The Generator is a network for generating images. It receives a random noise z and generates images from this noise, which is called G(z).Discriminator is a discriminant network that discriminates whether an image is real. The input is x, x is a picture, and the output is D of x is the probability that x is a real picture, and if it's 1, it's 100% real, and if it's 0, it's not real.
 
 ### Installation
+
+Install from pypi:
+```bash
+pip install gan_pytorch
+```
 
 Install from source:
 ```bash
