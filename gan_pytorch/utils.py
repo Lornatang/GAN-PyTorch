@@ -36,10 +36,10 @@ def model_params(model_name):
   r""" Map Generator and Discriminator model name to parameter coefficients.
     
     Args:
-        model_name (string): The name of the model corresponding to the dataset.
+      model_name (string): The name of the model corresponding to the dataset.
 
     Return:
-        A binary tuple value.
+      A binary tuple value.
 
     """
   params_dict = {
@@ -56,11 +56,11 @@ def model(channels=None, image_size=None):
   r""" Gets the parameters of the model
     
     Args:
-        channels (int): size of each input image channels.
-        image_size (int): size of each input image size. 
+      channels (int): size of each input image channels.
+      image_size (int): size of each input image size.
 
     Return:
-        A set of GlobalParams shared between blocks.
+      A set of GlobalParams shared between blocks.
 
     """
   global_params = GlobalParams(
@@ -78,10 +78,10 @@ def get_model_params(model_name):
   """ Get the block args and global params for a given model
     
     Args:
-        model_name (string): The name of the model corresponding to the dataset.
+      model_name (string): The name of the model corresponding to the dataset.
 
     Return:
-        A set of GlobalParams shared between blocks.
+      A set of GlobalParams shared between blocks.
 
     """
   if model_name.startswith("g") or model_name.startswith("d"):
