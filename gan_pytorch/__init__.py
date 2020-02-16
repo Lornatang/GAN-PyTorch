@@ -12,7 +12,7 @@
 # limitations under the License.
 # ==============================================================================
 
-__version__ = "0.1.1"
+__version__ = "0.1.3"
 
 from .model import Discriminator
 from .model import Generator
