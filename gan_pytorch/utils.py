@@ -38,9 +38,8 @@ def model_params(model_name):
     Args:
       model_name (string): The name of the model corresponding to the dataset.
 
-    Return:
+    Returns:
       A binary tuple value.
-
     """
   params_dict = {
     # Coefficients: channels, image_size
@@ -59,9 +58,8 @@ def model(channels=None, image_size=None):
       channels (int): size of each input image channels.
       image_size (int): size of each input image size.
 
-    Return:
+    Returns:
       A set of GlobalParams shared between blocks.
-
     """
   global_params = GlobalParams(
     noise=100,
@@ -80,9 +78,8 @@ def get_model_params(model_name):
     Args:
       model_name (string): The name of the model corresponding to the dataset.
 
-    Return:
+    Returns:
       A set of GlobalParams shared between blocks.
-
     """
   if model_name.startswith("g") or model_name.startswith("d"):
     c, s = model_params(model_name)
@@ -93,10 +90,10 @@ def get_model_params(model_name):
 
 
 url_maps = {
-  "g-mnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/g-mnist-11697523.pth",
-  "g-fmnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/g-fmnist-e8717abe.pth",
-  "d-mnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/d-mnist-4c612644.pth",
-  "d-fmnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/d-fmnist-7bc47869.pth",
+  "g-mnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/g-mnist-4f1fd2ba.pth",
+  "g-fmnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/g-fmnist-9aad7d62.pth",
+  "d-mnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/d-mnist-a5866317.pth",
+  "d-fmnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/d-fmnist-30dced74.pth",
 }
 
 

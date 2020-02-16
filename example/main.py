@@ -38,9 +38,8 @@ import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
 
-from dcgan_pytorch import Discriminator
-from dcgan_pytorch import Generator
-from dcgan_pytorch import weights_init
+from gan_pytorch import Discriminator
+from gan_pytorch import Generator
 
 parser = argparse.ArgumentParser(description='PyTorch GAN')
 parser.add_argument('--dataroot', type=str, default='./data',
@@ -241,6 +240,7 @@ def main_worker(gpu, ngpus_per_node, args):
     if os.path.isfile(args.netD):
       print(f"=> loading checkpoint `{args.netD}`")
       state_dict = torch.load(args.netD)
+      discriminator.load_state_dict(state_dict)
       compress_model(state_dict, filename=args.netD, model_arch=args.discriminator_arch)
       print(f"=> loaded checkpoint `{args.netD}`")
     else:
@@ -248,33 +248,15 @@ def main_worker(gpu, ngpus_per_node, args):
 
   cudnn.benchmark = True
 
-  if args.name == 'imagenet':
-    # folder dataset
-    dataset = datasets.ImageFolder(root=args.dataroot,
-                                   transform=transforms.Compose([
-                                     transforms.Resize(64),
-                                     transforms.CenterCrop(64),
-                                     transforms.ToTensor(),
-                                     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-                                   ]))
-  elif args.name == 'cifar':
-    dataset = datasets.CIFAR10(root=args.dataroot, download=True,
-                               transform=transforms.Compose([
-                                 transforms.Resize(64),
-                                 transforms.ToTensor(),
-                                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-                               ]))
-  elif args.name == 'mnist':
+  if args.name == 'mnist':
     dataset = datasets.MNIST(root=args.dataroot, download=True,
                              transform=transforms.Compose([
-                               transforms.Resize(64),
                                transforms.ToTensor(),
                                transforms.Normalize((0.5,), (0.5,)),
                              ]))
   elif args.name == 'fmnist':
     dataset = datasets.FashionMNIST(root=args.dataroot, download=True,
                                     transform=transforms.Compose([
-                                      transforms.Resize(64),
                                       transforms.ToTensor(),
                                       transforms.Normalize((0.5,), (0.5,)),
                                     ]))
@@ -283,7 +265,6 @@ def main_worker(gpu, ngpus_per_node, args):
                   'default use MNIST dataset!')
     dataset = datasets.MNIST(root=args.dataroot, download=True,
                              transform=transforms.Compose([
-                               transforms.Resize(64),
                                transforms.ToTensor(),
                                transforms.Normalize((0.5,), (0.5,)),
                              ]))
@@ -322,7 +303,7 @@ def train(dataloader, generator, discriminator, adversarial_loss, optimizerG, op
     real_label = torch.full((batch_size,), 1)
     fake_label = torch.full((batch_size,), 0)
     # Sample noise as generator input
-    noise = torch.randn(batch_size, 100, 1, 1)
+    noise = torch.randn(batch_size, 100)
     if args.gpu is not None:
       real_label = real_label.cuda(args.gpu, non_blocking=True)
       fake_label = fake_label.cuda(args.gpu, non_blocking=True)
@@ -375,7 +356,7 @@ def train(dataloader, generator, discriminator, adversarial_loss, optimizerG, op
       vutils.save_image(real_images,
                         f"{args.outf}/real_samples.png",
                         normalize=True)
-      fixed_noise = torch.randn(args.batch_size, 100, 1, 1)
+      fixed_noise = torch.randn(args.batch_size, 100)
       if args.gpu is not None:
         fixed_noise = fixed_noise.cuda(args.gpu, non_blocking=True)
       fake = generator(fixed_noise)
@@ -389,11 +370,11 @@ def validate(model, args):
   model.eval()
 
   with torch.no_grad():
-    noise = torch.randn(args.batch_size, 100, 1, 1)
+    noise = torch.randn(args.batch_size, 100)
     if args.gpu is not None:
       noise = noise.cuda(args.gpu, non_blocking=True)
     fake = model(noise)
-    vutils.save_image(fake.detach().cpu(), f"{args.outf}/fake.png", normalize=True)
+    vutils.save_image(fake.detach(), f"{args.outf}/fake.png", normalize=True)
   print("The fake image has been generated!")
 
 
