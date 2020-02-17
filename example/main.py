@@ -40,6 +40,7 @@ import torchvision.utils as vutils
 
 from gan_pytorch import Discriminator
 from gan_pytorch import Generator
+from gan_pytorch import weights_init
 
 parser = argparse.ArgumentParser(description='PyTorch GAN')
 parser.add_argument('--dataroot', type=str, default='./data',
@@ -219,6 +220,9 @@ def main_worker(gpu, ngpus_per_node, args):
     # GPUs
     generator = torch.nn.DataParallel(generator).cuda()
     discriminator = torch.nn.DataParallel(discriminator).cuda()
+
+  generator.apply(weights_init)
+  discriminator.apply(weights_init)
 
   # define loss function (adversarial_loss) and optimizer
   adversarial_loss = nn.BCELoss().cuda(args.gpu)

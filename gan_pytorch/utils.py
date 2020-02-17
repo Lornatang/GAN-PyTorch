@@ -11,7 +11,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-
 import collections
 import ssl
 
@@ -25,6 +24,16 @@ GlobalParams = collections.namedtuple("GlobalParams", [
 
 # Change namedtuple defaults
 GlobalParams.__new__.__defaults__ = (None,) * len(GlobalParams._fields)
+
+
+# custom weights initialization called on netG and netD
+def weights_init(m):
+  classname = m.__class__.__name__
+  if classname.find('Conv') != -1:
+    m.weight.data.normal_(0.0, 0.02)
+  elif classname.find('BatchNorm') != -1:
+    m.weight.data.normal_(1.0, 0.02)
+    m.bias.data.fill_(0)
 
 
 ########################################################################
@@ -89,7 +98,7 @@ def get_model_params(model_name):
   return global_params
 
 
-url_maps = {
+urls_map = {
   "g-mnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/g-mnist-4f1fd2ba.pth",
   "g-fmnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/g-fmnist-9aad7d62.pth",
   "d-mnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/d-mnist-a5866317.pth",
@@ -109,6 +118,6 @@ def load_pretrained_weights(model_arch, model_name):
     # Handle target environment that doesn't support HTTPS verification
     ssl._create_default_https_context = _create_unverified_https_context
 
-  state_dict = model_zoo.load_url(url_maps[model_name])
+  state_dict = model_zoo.load_url(urls_map[model_name])
   model_arch.load_state_dict(state_dict)
   print(f"Loaded model pretrained weights for `{model_name}`.")
