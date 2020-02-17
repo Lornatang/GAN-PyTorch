@@ -97,16 +97,16 @@ model.to(device)
 model.eval()
 
 try:
-    os.makedirs("./imgs")
+  os.makedirs("./imgs")
 except OSError:
-    pass
+  pass
 
 with torch.no_grad():
-    for i in range(64):
-        noise = torch.randn(64, 100, device=device)
-        fake = model(noise)
-        vutils.save_image(fake.detach().cpu(), f"./imgs/fake_{i:04d}.png", normalize=True)
-    print("The fake image has been generated!")
+  for i in range(64):
+    noise = torch.randn(64, 100, device=device)
+    fake = model(noise)
+    vutils.save_image(fake.detach().cpu(), f"./imgs/fake_{i:04d}.png", normalize=True)
+  print("The fake image has been generated!")
 ```
 
 #### Example: Visual
