@@ -30,9 +30,9 @@ NAME = 'gan_pytorch'
 DESCRIPTION = 'PyTorch implements a simple GAN neural network structure.'
 URL = 'https://github.com/lornatang/GAN-PyTorch'
 EMAIL = 'liuchangyu1111@gmail.com'
-AUTHOR = 'LiuChangyu'
+AUTHOR = 'Liu Changyu'
 REQUIRES_PYTHON = '>=3.5.0'
-VERSION = '0.1.9'
+VERSION = '0.2.0'
 
 # What packages are required for this module to be executed?
 REQUIRED = [

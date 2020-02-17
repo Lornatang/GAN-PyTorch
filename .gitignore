@@ -138,3 +138,4 @@ imgs/
 research/data
 checkpoints/
 *.pth
+将删除 framework/static/cifar/

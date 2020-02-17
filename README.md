@@ -60,7 +60,7 @@ Install from source:
 ```bash
 git clone https://github.com/lornatang/Generative-Adversarial-Networks
 cd Generative-Adversarial-Networks
-python setup.py install
+pip install -e .
 ``` 
 
 ### Usage
@@ -113,10 +113,10 @@ with torch.no_grad():
 
 ```text
 cd $REPO$/framework
-python manage.py runserver
+sh start.sh
 ```
 
-Then open the browser and type in the browser address [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
+Then open the browser and type in the browser address [http://127.0.0.1:10000/](http://127.0.0.1:10000/).
 Enjoy it.
 
 ### Contributing
