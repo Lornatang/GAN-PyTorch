@@ -304,8 +304,8 @@ def train(dataloader, generator, discriminator, adversarial_loss, optimizerG, op
     batch_size = real_images.size(0)
 
     # real data label is 1, fake data label is 0.
-    real_label = torch.full((batch_size,), 1)
-    fake_label = torch.full((batch_size,), 0)
+    real_label = torch.full((batch_size, 1), 1)
+    fake_label = torch.full((batch_size, 1), 0)
     # Sample noise as generator input
     noise = torch.randn(batch_size, 100)
     if args.gpu is not None:
