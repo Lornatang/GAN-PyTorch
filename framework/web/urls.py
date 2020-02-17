@@ -11,13 +11,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-
-"""
-====================================WARNING====================================
-Do not delete this file unless you know how to refactor it!
-====================================WARNING====================================
-"""
-
 from api import FMNIST
 from api import MNIST
 from api import index

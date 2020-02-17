@@ -11,9 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-
-from .visual_mnist import MNIST
 from .visual_fmnist import FMNIST
-
-from .visual_mnist import index
 from .visual_fmnist import index
+from .visual_mnist import MNIST
+from .visual_mnist import index
