@@ -19,21 +19,11 @@ import torch.utils.model_zoo as model_zoo
 # Parameters for the entire model (stem, all blocks, and head)
 GlobalParams = collections.namedtuple("GlobalParams", [
   "noise", "channels", "image_size",
-  "batch_norm_momentum", "relu_negative_slope"
+  "batch_norm_momentum", "negative_slope"
 ])
 
 # Change namedtuple defaults
 GlobalParams.__new__.__defaults__ = (None,) * len(GlobalParams._fields)
-
-
-# custom weights initialization called on netG and netD
-def weights_init(m):
-  classname = m.__class__.__name__
-  if classname.find('Conv') != -1:
-    m.weight.data.normal_(0.0, 0.02)
-  elif classname.find('BatchNorm') != -1:
-    m.weight.data.normal_(1.0, 0.02)
-    m.bias.data.fill_(0)
 
 
 ########################################################################
@@ -43,7 +33,7 @@ def weights_init(m):
 
 def model_params(model_name):
   r""" Map Generator and Discriminator model name to parameter coefficients.
-    
+
     Args:
       model_name (string): The name of the model corresponding to the dataset.
 
@@ -63,7 +53,7 @@ def model_params(model_name):
 
 def model(channels=None, image_size=None):
   r""" Gets the parameters of the model
-    
+
     Args:
       channels (int): size of each input image channels.
       image_size (int): size of each input image size.
@@ -75,7 +65,7 @@ def model(channels=None, image_size=None):
   global_params = GlobalParams(
     noise=100,
     batch_norm_momentum=0.8,
-    relu_negative_slope=0.2,
+    negative_slope=0.2,
     channels=channels,
     image_size=image_size,
   )
@@ -85,7 +75,7 @@ def model(channels=None, image_size=None):
 
 def get_model_params(model_name):
   """ Get the block args and global params for a given model
-    
+
     Args:
       model_name (string): The name of the model corresponding to the dataset.
 

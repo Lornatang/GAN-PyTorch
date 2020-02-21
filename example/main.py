@@ -221,9 +221,6 @@ def main_worker(gpu, ngpus_per_node, args):
     generator = torch.nn.DataParallel(generator).cuda()
     discriminator = torch.nn.DataParallel(discriminator).cuda()
 
-  generator.apply(weights_init)
-  discriminator.apply(weights_init)
-
   # define loss function (adversarial_loss) and optimizer
   adversarial_loss = nn.BCELoss().cuda(args.gpu)
 
