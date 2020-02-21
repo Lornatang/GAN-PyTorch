@@ -22,8 +22,7 @@ from .utils import model_params
 # Generative Adversarial Networks model architecture from the One weird trick...
 # <https://arxiv.org/abs/1406.2661>`_ paper.
 class Generator(nn.Module):
-  r""" An Generator model. Most easily loaded with the .from_name or
-      .from_pretrained methods
+  r""" An Generator model. Most easily loaded with the .from_name or .from_pretrained methods
 
   Args:
     global_params (namedtuple): A set of GlobalParams shared between blocks
@@ -42,44 +41,25 @@ class Generator(nn.Module):
 
   def __init__(self, global_params=None):
     super(Generator, self).__init__()
-    self.noise = global_params.noise
     self.channels = global_params.channels
     self.image_size = global_params.image_size
-    self.batch_norm_momentum = global_params.batch_norm_momentum
-    self.relu_negative_slope = global_params.relu_negative_slope
-
-    def block(in_features, out_features, normalize=True):
-      r""" Define neuron module layer.
-
-      Args:
-        in_features (int): size of each input sample.
-        out_features (int): size of each output sample.
-        normalize (bool): If set to ``False``, the block will not add
-                            an batch normalization method. Default: ``True``.
-
-      Returns:
-        Some neural model layers
-
-      Examples:
-        >>> block(6, 16, normalize=False)
-        [Linear(in_features=6, out_features=16, bias=True),
-        LeakyReLU(negative_slope=0.2, inplace=True)]
-        >>> block(6, 16)
-        [Linear(in_features=6, out_features=16, bias=True),
-        BatchNorm1d(16, eps=0.8, momentum=0.1, affine=True, track_running_stats=True),
-        LeakyReLU(negative_slope=0.2, inplace=True)]
-      """
-      layers = [nn.Linear(in_features, out_features)]
-      if normalize:
-        layers.append(nn.BatchNorm1d(out_features, self.batch_norm_momentum))
-      layers.append(nn.LeakyReLU(self.relu_negative_slope, inplace=True))
-      return layers
 
     self.main = nn.Sequential(
-      *block(self.noise, 128, normalize=False),
-      *block(128, 256),
-      *block(256, 512),
-      *block(512, 1024),
+      nn.Linear(global_params.noise, 128),
+      nn.LeakyReLU(global_params.negative_slope, inplace=True),
+
+      nn.Linear(128, 256),
+      nn.BatchNorm1d(256, global_params.batch_norm_momentum),
+      nn.LeakyReLU(global_params.negative_slope, inplace=True),
+
+      nn.Linear(256, 512),
+      nn.BatchNorm1d(512, global_params.batch_norm_momentum),
+      nn.LeakyReLU(global_params.negative_slope, inplace=True),
+
+      nn.Linear(512, 1024),
+      nn.BatchNorm1d(1024, global_params.batch_norm_momentum),
+      nn.LeakyReLU(global_params.negative_slope, inplace=True),
+
       nn.Linear(1024, self.channels * self.image_size * self.image_size),
       nn.Tanh()
     )
@@ -125,8 +105,7 @@ class Generator(nn.Module):
 
 
 class Discriminator(nn.Module):
-  r""" An Discriminator model. Most easily loaded with the .from_name or
-      .from_pretrained methods
+  r""" An Discriminator model. Most easily loaded with the .from_name or .from_pretrained methods
 
   Args:
     global_params (namedtuple): A set of GlobalParams shared between blocks
@@ -142,34 +121,16 @@ class Discriminator(nn.Module):
 
   def __init__(self, global_params=None):
     super(Discriminator, self).__init__()
-    self.channels = global_params.channels
-    self.image_size = global_params.image_size
-    self.relu_negative_slope = global_params.relu_negative_slope
-
-    def block(in_features, out_features):
-      r""" Define neuron module layer.
-
-      Args:
-        in_features (int): size of each input sample.
-        out_features (int): size of each output sample.
-
-      Returns:
-        Some neural model layers
-
-      Examples:
-        >>> block(6, 16)
-        [Linear(in_features=6, out_features=16, bias=True),
-        LeakyReLU(negative_slope=0.2, inplace=True)]
-      """
-      layers = [nn.Linear(in_features, out_features),
-                nn.LeakyReLU(self.relu_negative_slope, inplace=True)]
-      return layers
 
     self.main = nn.Sequential(
-      *block(self.channels * self.image_size * self.image_size, 512),
-      *block(512, 256),
+      nn.Linear(global_params.channels * global_params.image_size * global_params.image_size, 512),
+      nn.LeakyReLU(global_params.negative_slope, inplace=True),
+
+      nn.Linear(512, 256),
+      nn.LeakyReLU(global_params.negative_slope, inplace=True),
+
       nn.Linear(256, 1),
-      nn.Sigmoid()
+      nn.Sigmoid(),
     )
 
   def forward(self, x):

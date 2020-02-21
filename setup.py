@@ -28,11 +28,11 @@ from setuptools import find_packages, setup, Command
 # Package meta-data.
 NAME = 'gan_pytorch'
 DESCRIPTION = 'PyTorch implements a simple GAN neural network structure.'
-URL = 'https://github.com/lornatang/GAN-PyTorch'
+URL = 'https://github.com/Lornatang/GAN-PyTorch'
 EMAIL = 'liuchangyu1111@gmail.com'
 AUTHOR = 'Liu Changyu'
 REQUIRES_PYTHON = '>=3.5.0'
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
