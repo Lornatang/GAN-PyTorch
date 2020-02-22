@@ -40,7 +40,6 @@ import torchvision.utils as vutils
 
 from gan_pytorch import Discriminator
 from gan_pytorch import Generator
-from gan_pytorch import weights_init
 
 parser = argparse.ArgumentParser(description='PyTorch GAN')
 parser.add_argument('--dataroot', type=str, default='./data',
@@ -318,7 +317,6 @@ def train(dataloader, generator, discriminator, adversarial_loss, optimizerG, op
     # Train with real
     real_output = discriminator(real_images)
     errD_real = adversarial_loss(real_output, real_label)
-    errD_real.backward()
     D_x = real_output.mean().item()
 
     # Generate fake image batch with G
@@ -327,11 +325,11 @@ def train(dataloader, generator, discriminator, adversarial_loss, optimizerG, op
     # Train with fake
     fake_output = discriminator(fake.detach())
     errD_fake = adversarial_loss(fake_output, fake_label)
-    errD_fake.backward()
     D_G_z1 = fake_output.mean().item()
 
     # Add the gradients from the all-real and all-fake batches
-    errD = errD_real + errD_fake
+    errD = (errD_real + errD_fake) / 2
+    errD.backward()
     # Update D
     optimizerD.step()
 
