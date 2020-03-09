@@ -37,6 +37,7 @@ import torch.utils.data.distributed
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
+from dcgan_pytorch import weights_init
 from tqdm import tqdm
 
 from gan_pytorch import Discriminator
@@ -74,6 +75,8 @@ parser.add_argument('--netG', default='', type=str, metavar='PATH',
                     help='path to latest generator checkpoint (default: none)')
 parser.add_argument('--netD', default='', type=str, metavar='PATH',
                     help='path to latest discriminator checkpoint (default: none)')
+parser.add_argument('--init-weights', action='store_true',
+                    help='Using the initialization weight method in dcgan architecture')
 parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                     help='evaluate model on validation set')
 parser.add_argument('--pretrained', dest='pretrained', action='store_true',
@@ -161,6 +164,9 @@ def main_worker(gpu, ngpus_per_node, args):
         print("=> creating model")
         discriminator = Discriminator.from_name(args.discriminator_arch)
         generator = Generator.from_name(args.generator_arch)
+        if args.init_weights:
+            discriminator.apply(weights_init)
+            generator.apply(weights_init)
     else:
         warnings.warn('You have chosen a specific model architecture. '
                       'This will default use MNIST model architecture and load pre-train model weights!')
