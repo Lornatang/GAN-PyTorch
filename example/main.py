@@ -25,6 +25,7 @@ import os
 import random
 import warnings
 
+import matplotlib.pyplot as plt
 import torch
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
@@ -266,9 +267,13 @@ def main_worker(gpu, ngpus_per_node, args):
         validate(generator, args)
         return
 
+    # Lists to keep track of progress
+    G_losses = []
+    D_losses = []
     for epoch in range(args.start_epoch, args.epochs):
         # train for one epoch
-        train(dataloader, generator, discriminator, adversarial_loss, optimizerG, optimizerD, epoch, args)
+        train(dataloader, generator, discriminator, adversarial_loss, optimizerG, optimizerD, epoch, G_losses, D_losses,
+              args)
 
         if not args.multiprocessing_distributed or (args.multiprocessing_distributed
                                                     and args.rank % ngpus_per_node == 0):
@@ -276,8 +281,18 @@ def main_worker(gpu, ngpus_per_node, args):
             torch.save(generator.state_dict(), f"{args.outf}/netG_epoch_{epoch}.pth")
             torch.save(discriminator.state_dict(), f"{args.outf}/netD_epoch_{epoch}.pth")
 
+    plt.figure(figsize=(10, 5))
+    plt.title("Generator and Discriminator Loss During Training")
+    plt.plot(G_losses, label="G")
+    plt.plot(D_losses, label="D")
+    plt.xlabel("iterations")
+    plt.ylabel("Loss")
+    plt.legend()
+    plt.savefig("result.png")
 
-def train(dataloader, generator, discriminator, adversarial_loss, optimizerG, optimizerD, epoch, args):
+
+def train(dataloader, generator, discriminator, adversarial_loss, optimizerG, optimizerD, epoch, G_losses,
+          D_losses, args):
     # switch to train mode
     global fixed_noise
     generator.train()
@@ -347,6 +362,10 @@ def train(dataloader, generator, discriminator, adversarial_loss, optimizerG, op
             vutils.save_image(real_images,
                               f"{args.outf}/real_samples.png",
                               normalize=True)
+
+            # Save Losses for plotting later
+            G_losses.append(errG.item())
+            D_losses.append(errD.item())
 
             if args.gpu is not None:
                 fixed_noise = fixed_noise.cuda(args.gpu, non_blocking=True)

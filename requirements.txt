@@ -5,3 +5,4 @@ six
 torch
 torchvision
 tqdm
+matplotlib
