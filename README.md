@@ -4,8 +4,8 @@
 
 Now you can install this library directly using pip!
 
-```text
-pip install --upgrade gan_pytorch
+```bash
+$ pip3 install --upgrade gan_pytorch
 ```
 
 ### Update (January 29, 2020)
@@ -53,14 +53,15 @@ We have two networks, G (Generator) and D (Discriminator).The Generator is a net
 
 Install from pypi:
 ```bash
-pip install gan_pytorch
+$ pip3 install gan_pytorch
 ```
 
 Install from source:
 ```bash
-git clone https://github.com/lornatang/Generative-Adversarial-Networks
-cd Generative-Adversarial-Networks
-pip install -e .
+$ git clone https://github.com/lornatang/Generative-Adversarial-Networks
+$ cd Generative-Adversarial-Networks
+$ pip3 install -r requirements.txt
+$ pip3 install -e .
 ``` 
 
 ### Usage
