@@ -20,7 +20,6 @@ to tell real images apart from fakes.
 """
 
 import argparse
-import hashlib
 import os
 import random
 import warnings
@@ -43,6 +42,7 @@ from tqdm import tqdm
 
 from gan_pytorch import Discriminator
 from gan_pytorch import Generator
+from utils import compress_model
 
 parser = argparse.ArgumentParser(description='PyTorch GAN')
 parser.add_argument('--dataroot', type=str, default='./data',
@@ -386,33 +386,6 @@ def validate(model, args):
         fake = model(noise)
         vutils.save_image(fake.detach(), f"{args.outf}/fake.png", normalize=True)
     print("The fake image has been generated!")
-
-
-def cal_file_md5(filename):
-    """ Calculates the MD5 value of the file
-    Args:
-        filename: The path name of the file.
-
-    Return:
-        The MD5 value of the file.
-
-    """
-    with open(filename, "rb") as f:
-        md5 = hashlib.md5()
-        md5.update(f.read())
-        hash_value = md5.hexdigest()
-    return hash_value
-
-
-def compress_model(state, filename, model_arch):
-    model_folder = "../checkpoints"
-    try:
-        os.makedirs(model_folder)
-    except OSError:
-        pass
-
-    new_filename = model_arch + "-" + cal_file_md5(filename)[:8] + ".pth"
-    torch.save(state, os.path.join(model_folder, new_filename))
 
 
 if __name__ == '__main__':

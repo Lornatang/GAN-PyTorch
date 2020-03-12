@@ -1,4 +1,4 @@
-djangorestframeworik
+djangorestframework
 django
 pillow
 six
