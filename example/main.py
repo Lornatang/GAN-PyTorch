@@ -42,7 +42,7 @@ from tqdm import tqdm
 
 from gan_pytorch import Discriminator
 from gan_pytorch import Generator
-from utils import compress_model
+from gan_pytorch import compress_model
 
 parser = argparse.ArgumentParser(description='PyTorch GAN')
 parser.add_argument('--dataroot', type=str, default='./data',
@@ -352,7 +352,7 @@ def train(dataloader, generator, discriminator, adversarial_loss, optimizerG, op
         # Update G
         optimizerG.step()
 
-        progress_bar.set_description(f"[{epoch}/{args.epochs}][{i:03d}/{len(dataloader)}] "
+        progress_bar.set_description(f"[{epoch}/{args.epochs - 1}][{i:03d}/{len(dataloader)}] "
                                      f"Loss_D: {errD.item():.4f} "
                                      f"Loss_G: {errG.item():.4f} "
                                      f"D_x: {D_x:.4f} "

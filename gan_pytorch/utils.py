@@ -12,18 +12,48 @@
 # limitations under the License.
 # ==============================================================================
 import collections
+import hashlib
+import os
 import ssl
 
+import torch
 import torch.utils.model_zoo as model_zoo
 
 # Parameters for the entire model (stem, all blocks, and head)
 GlobalParams = collections.namedtuple("GlobalParams", [
-  "noise", "channels", "image_size",
-  "batch_norm_momentum", "negative_slope"
+    "noise", "channels", "image_size",
+    "batch_norm_momentum", "negative_slope"
 ])
 
 # Change namedtuple defaults
 GlobalParams.__new__.__defaults__ = (None,) * len(GlobalParams._fields)
+
+
+def cal_file_md5(filename):
+    """ Calculates the MD5 value of the file
+    Args:
+        filename: The path name of the file.
+
+    Return:
+        The MD5 value of the file.
+
+    """
+    with open(filename, "rb") as f:
+        md5 = hashlib.md5()
+        md5.update(f.read())
+        hash_value = md5.hexdigest()
+    return hash_value
+
+
+def compress_model(state, filename, model_arch):
+    model_folder = "../checkpoints"
+    try:
+        os.makedirs(model_folder)
+    except OSError:
+        pass
+
+    new_filename = model_arch + "-" + cal_file_md5(filename)[:8] + ".pth"
+    torch.save(state, os.path.join(model_folder, new_filename))
 
 
 ########################################################################
@@ -32,85 +62,85 @@ GlobalParams.__new__.__defaults__ = (None,) * len(GlobalParams._fields)
 
 
 def model_params(model_name):
-  r""" Map Generator and Discriminator model name to parameter coefficients.
+    r""" Map Generator and Discriminator model name to parameter coefficients.
 
-    Args:
-      model_name (string): The name of the model corresponding to the dataset.
+      Args:
+        model_name (string): The name of the model corresponding to the dataset.
 
-    Returns:
-      A binary tuple value.
-    """
+      Returns:
+        A binary tuple value.
+      """
 
-  params_dict = {
-    # Coefficients: channels, image_size
-    "g-mnist": (1, 28),
-    "g-fmnist": (1, 28),
-    "d-mnist": (1, 28),
-    "d-fmnist": (1, 28),
-  }
-  return params_dict[model_name]
+    params_dict = {
+        # Coefficients: channels, image_size
+        "g-mnist": (1, 28),
+        "g-fmnist": (1, 28),
+        "d-mnist": (1, 28),
+        "d-fmnist": (1, 28),
+    }
+    return params_dict[model_name]
 
 
 def model(channels=None, image_size=None):
-  r""" Gets the parameters of the model
+    r""" Gets the parameters of the model
 
-    Args:
-      channels (int): size of each input image channels.
-      image_size (int): size of each input image size.
+      Args:
+        channels (int): size of each input image channels.
+        image_size (int): size of each input image size.
 
-    Returns:
-      A set of GlobalParams shared between blocks.
-    """
+      Returns:
+        A set of GlobalParams shared between blocks.
+      """
 
-  global_params = GlobalParams(
-    noise=100,
-    batch_norm_momentum=0.8,
-    negative_slope=0.2,
-    channels=channels,
-    image_size=image_size,
-  )
+    global_params = GlobalParams(
+        noise=100,
+        batch_norm_momentum=0.8,
+        negative_slope=0.2,
+        channels=channels,
+        image_size=image_size,
+    )
 
-  return global_params
+    return global_params
 
 
 def get_model_params(model_name):
-  """ Get the block args and global params for a given model
+    """ Get the block args and global params for a given model
 
-    Args:
-      model_name (string): The name of the model corresponding to the dataset.
+      Args:
+        model_name (string): The name of the model corresponding to the dataset.
 
-    Returns:
-      A set of GlobalParams shared between blocks.
-    """
+      Returns:
+        A set of GlobalParams shared between blocks.
+      """
 
-  if model_name.startswith("g") or model_name.startswith("d"):
-    c, s = model_params(model_name)
-    global_params = model(channels=c, image_size=s)
-  else:
-    raise NotImplementedError(f"model name is not pre-defined: {model_name}.")
-  return global_params
+    if model_name.startswith("g") or model_name.startswith("d"):
+        c, s = model_params(model_name)
+        global_params = model(channels=c, image_size=s)
+    else:
+        raise NotImplementedError(f"model name is not pre-defined: {model_name}.")
+    return global_params
 
 
 urls_map = {
-  "d-fmnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/d-fmnist-9c026cb2.pth",
-  "d-mnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/d-mnist-21dc2b92.pth",
-  "g-fmnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/g-fmnist-d962591f.pth",
-  "g-mnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/g-mnist-7801c655.pth",
+    "d-fmnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/d-fmnist-9c026cb2.pth",
+    "d-mnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/d-mnist-21dc2b92.pth",
+    "g-fmnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/g-fmnist-d962591f.pth",
+    "g-mnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/g-mnist-7801c655.pth",
 }
 
 
 def load_pretrained_weights(model_arch, model_name):
-  """ Loads pretrained weights, and downloads if loading for the first time. """
+    """ Loads pretrained weights, and downloads if loading for the first time. """
 
-  try:
-    _create_unverified_https_context = ssl._create_unverified_context
-  except AttributeError:
-    # Legacy Python that doesn't verify HTTPS certificates by default
-    pass
-  else:
-    # Handle target environment that doesn't support HTTPS verification
-    ssl._create_default_https_context = _create_unverified_https_context
+    try:
+        _create_unverified_https_context = ssl._create_unverified_context
+    except AttributeError:
+        # Legacy Python that doesn't verify HTTPS certificates by default
+        pass
+    else:
+        # Handle target environment that doesn't support HTTPS verification
+        ssl._create_default_https_context = _create_unverified_https_context
 
-  state_dict = model_zoo.load_url(urls_map[model_name])
-  model_arch.load_state_dict(state_dict)
-  print(f"Loaded model pretrained weights for `{model_name}`.")
+    state_dict = model_zoo.load_url(urls_map[model_name])
+    model_arch.load_state_dict(state_dict)
+    print(f"Loaded model pretrained weights for `{model_name}`.")
