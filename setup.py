@@ -31,8 +31,8 @@ DESCRIPTION = 'PyTorch implements a simple GAN neural network structure.'
 URL = 'https://github.com/Lornatang/GAN-PyTorch'
 EMAIL = 'liuchangyu1111@gmail.com'
 AUTHOR = 'Liu Changyu'
-REQUIRES_PYTHON = '>=3.5.0'
-VERSION = '0.3.0'
+REQUIRES_PYTHON = '>=3.6.0'
+VERSION = '0.4.0'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
@@ -136,7 +136,7 @@ setup(
     'License :: OSI Approved :: Apache Software License',
     'Programming Language :: Python',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.6',
   ],
   # $ setup.py publish support.
   cmdclass={

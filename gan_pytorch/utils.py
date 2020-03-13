@@ -29,33 +29,6 @@ GlobalParams = collections.namedtuple("GlobalParams", [
 GlobalParams.__new__.__defaults__ = (None,) * len(GlobalParams._fields)
 
 
-def cal_file_md5(filename):
-    """ Calculates the MD5 value of the file
-    Args:
-        filename: The path name of the file.
-
-    Return:
-        The MD5 value of the file.
-
-    """
-    with open(filename, "rb") as f:
-        md5 = hashlib.md5()
-        md5.update(f.read())
-        hash_value = md5.hexdigest()
-    return hash_value
-
-
-def compress_model(state, filename, model_arch):
-    model_folder = "../checkpoints"
-    try:
-        os.makedirs(model_folder)
-    except OSError:
-        pass
-
-    new_filename = model_arch + "-" + cal_file_md5(filename)[:8] + ".pth"
-    torch.save(state, os.path.join(model_folder, new_filename))
-
-
 ########################################################################
 ############## HELPERS FUNCTIONS FOR LOADING MODEL PARAMS ##############
 ########################################################################
@@ -122,24 +95,15 @@ def get_model_params(model_name):
 
 
 urls_map = {
-    "d-fmnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/d-fmnist-9c026cb2.pth",
-    "d-mnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/d-mnist-21dc2b92.pth",
-    "g-fmnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/g-fmnist-d962591f.pth",
-    "g-mnist": "https://github.com/changyu98/models/raw/master/pytorch/gan/g-mnist-7801c655.pth",
+    "d-fmnist": "https://github.com/Lornatang/GAN-PyTorch/releases/download/1.0/d-fmnist-68a00804.pth",
+    "d-mnist": "https://github.com/Lornatang/GAN-PyTorch/releases/download/1.0/d-mnist-73aa2235.pth",
+    "g-fmnist": "https://github.com/Lornatang/GAN-PyTorch/releases/download/1.0/g-fmnist-5036734e.pth",
+    "g-mnist": "https://github.com/Lornatang/GAN-PyTorch/releases/download/1.0/g-mnist-a0922495.pth",
 }
 
 
 def load_pretrained_weights(model_arch, model_name):
     """ Loads pretrained weights, and downloads if loading for the first time. """
-
-    try:
-        _create_unverified_https_context = ssl._create_unverified_context
-    except AttributeError:
-        # Legacy Python that doesn't verify HTTPS certificates by default
-        pass
-    else:
-        # Handle target environment that doesn't support HTTPS verification
-        ssl._create_default_https_context = _create_unverified_https_context
 
     state_dict = model_zoo.load_url(urls_map[model_name])
     model_arch.load_state_dict(state_dict)

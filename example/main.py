@@ -42,7 +42,6 @@ from tqdm import tqdm
 
 from gan_pytorch import Discriminator
 from gan_pytorch import Generator
-from gan_pytorch import compress_model
 
 parser = argparse.ArgumentParser(description='PyTorch GAN')
 parser.add_argument('--dataroot', type=str, default='./data',
@@ -107,6 +106,7 @@ fixed_noise = torch.randn(64, 100)
 
 def main():
     args = parser.parse_args()
+    print(args)
 
     try:
         os.makedirs(args.outf)
@@ -223,7 +223,6 @@ def main_worker(gpu, ngpus_per_node, args):
             print(f"=> loading checkpoint `{args.netG}`")
             state_dict = torch.load(args.netG)
             generator.load_state_dict(state_dict)
-            compress_model(state_dict, filename=args.netG, model_arch=args.generator_arch)
             print(f"=> loaded checkpoint `{args.netG}`")
         else:
             print(f"=> no checkpoint found at `{args.netG}`")
@@ -232,7 +231,6 @@ def main_worker(gpu, ngpus_per_node, args):
             print(f"=> loading checkpoint `{args.netD}`")
             state_dict = torch.load(args.netD)
             discriminator.load_state_dict(state_dict)
-            compress_model(state_dict, filename=args.netD, model_arch=args.discriminator_arch)
             print(f"=> loaded checkpoint `{args.netD}`")
         else:
             print(f"=> no checkpoint found at '{args.netD}'")
@@ -352,7 +350,7 @@ def train(dataloader, generator, discriminator, adversarial_loss, optimizerG, op
         # Update G
         optimizerG.step()
 
-        progress_bar.set_description(f"[{epoch}/{args.epochs - 1}][{i:03d}/{len(dataloader)}] "
+        progress_bar.set_description(f"[{epoch}/{args.epochs - 1}][{i}/{len(dataloader) - 1}] "
                                      f"Loss_D: {errD.item():.4f} "
                                      f"Loss_G: {errG.item():.4f} "
                                      f"D_x: {D_x:.4f} "
