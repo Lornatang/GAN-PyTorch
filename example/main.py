@@ -237,6 +237,10 @@ def main_worker(gpu, ngpus_per_node, args):
 
     cudnn.benchmark = True
 
+    if args.evaluate:
+        validate(generator, args)
+        return
+
     if args.name == 'mnist':
         dataset = datasets.MNIST(root=args.dataroot, download=True,
                                  transform=transforms.Compose([
@@ -260,10 +264,6 @@ def main_worker(gpu, ngpus_per_node, args):
 
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=args.batch_size,
                                              shuffle=True, num_workers=int(args.workers))
-
-    if args.evaluate:
-        validate(generator, args)
-        return
 
     # Lists to keep track of progress
     G_losses = []
