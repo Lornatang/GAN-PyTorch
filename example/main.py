@@ -214,8 +214,8 @@ def main_worker(gpu, ngpus_per_node, args):
     # define loss function (adversarial_loss) and optimizer
     adversarial_loss = nn.BCELoss().cuda(args.gpu)
 
-    optimizerG = torch.optim.Adam(generator.parameters(), lr=args.lr, betas=(args.beta1, args.beta2))
-    optimizerD = torch.optim.Adam(discriminator.parameters(), lr=args.lr, betas=(args.beta1, args.beta2))
+    optimizer_g = torch.optim.Adam(generator.parameters(), lr=args.lr, betas=(args.beta1, args.beta2))
+    optimizer_d = torch.optim.Adam(discriminator.parameters(), lr=args.lr, betas=(args.beta1, args.beta2))
 
     # optionally resume from a checkpoint
     if args.netG:
@@ -262,41 +262,46 @@ def main_worker(gpu, ngpus_per_node, args):
                                      transforms.Normalize((0.5,), (0.5,)),
                                  ]))
 
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=args.batch_size,
-                                             shuffle=True, num_workers=int(args.workers))
+    data_loader = torch.utils.data.DataLoader(dataset, batch_size=args.batch_size,
+                                              shuffle=True, num_workers=int(args.workers))
 
     # Lists to keep track of progress
-    G_losses = []
-    D_losses = []
+    g_losses = []
+    d_losses = []
     for epoch in range(args.start_epoch, args.epochs):
         # train for one epoch
-        train(dataloader, generator, discriminator, adversarial_loss, optimizerG, optimizerD, epoch, G_losses, D_losses,
-              args)
+        train(data_loader, generator, discriminator, adversarial_loss, optimizer_g, optimizer_d, epoch, g_losses,
+              d_losses, args)
 
         if not args.multiprocessing_distributed or (args.multiprocessing_distributed
                                                     and args.rank % ngpus_per_node == 0):
-            # do checkpointing
+            # save checkpoint
             torch.save(generator.state_dict(), f"{args.outf}/netG_epoch_{epoch}.pth")
             torch.save(discriminator.state_dict(), f"{args.outf}/netD_epoch_{epoch}.pth")
 
+        # save last checkpoint
+        if epoch == args.epoochs - 1:
+            torch.save(generator.state_dict(), f"{args.outf}/g.pth")
+            torch.save(discriminator.state_dict(), f"{args.outf}/d.pth")
+
     plt.figure(figsize=(10, 5))
     plt.title("Generator and Discriminator Loss During Training")
-    plt.plot(G_losses, label="G")
-    plt.plot(D_losses, label="D")
+    plt.plot(g_losses, label="G")
+    plt.plot(d_losses, label="D")
     plt.xlabel("iterations")
     plt.ylabel("Loss")
     plt.legend()
     plt.savefig("result.png")
 
 
-def train(dataloader, generator, discriminator, adversarial_loss, optimizerG, optimizerD, epoch, G_losses,
-          D_losses, args):
+def train(data_loader, generator, discriminator, adversarial_loss, optimizer_g, optimizer_d, epoch, g_losses, d_losses,
+          args):
     # switch to train mode
     global fixed_noise
     generator.train()
     discriminator.train()
 
-    progress_bar = tqdm(enumerate(dataloader), total=len(dataloader))
+    progress_bar = tqdm(enumerate(data_loader), total=len(data_loader))
     for i, data in progress_bar:
         # get batch size data
         real_images = data[0]
@@ -336,7 +341,7 @@ def train(dataloader, generator, discriminator, adversarial_loss, optimizerG, op
         errD = (errD_real + errD_fake) / 2
         errD.backward()
         # Update D
-        optimizerD.step()
+        optimizer_d.step()
 
         ##############################################
         # (2) Update G network: maximize log(D(G(z)))
@@ -348,9 +353,9 @@ def train(dataloader, generator, discriminator, adversarial_loss, optimizerG, op
         errG.backward()
         D_G_z2 = fake_output.mean().item()
         # Update G
-        optimizerG.step()
+        optimizer_g.step()
 
-        progress_bar.set_description(f"[{epoch}/{args.epochs - 1}][{i}/{len(dataloader) - 1}] "
+        progress_bar.set_description(f"[{epoch}/{args.epochs - 1}][{i}/{len(data_loader) - 1}] "
                                      f"Loss_D: {errD.item():.4f} "
                                      f"Loss_G: {errG.item():.4f} "
                                      f"D_x: {D_x:.4f} "
@@ -362,8 +367,8 @@ def train(dataloader, generator, discriminator, adversarial_loss, optimizerG, op
                               normalize=True)
 
             # Save Losses for plotting later
-            G_losses.append(errG.item())
-            D_losses.append(errD.item())
+            g_losses.append(errG.item())
+            d_losses.append(errD.item())
 
             if args.gpu is not None:
                 fixed_noise = fixed_noise.cuda(args.gpu, non_blocking=True)
