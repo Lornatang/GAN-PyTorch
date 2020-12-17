@@ -130,8 +130,8 @@ dmypy.json
 .DS_Store
 
 # custom
-example/data
-example/imgs
+data/MNIST
+output
 framework/static/mnist
 framework/static/fmnist
 imgs/
