@@ -17,6 +17,7 @@ Usage:
     import torch
     model = torch.hub.load("Lornatang/GAN-PyTorch", "mnist", pretrained=True, image_size=28, channels=1)
 """
+import torch
 from torch.hub import load_state_dict_from_url
 
 from gan_pytorch.models import Generator
@@ -45,7 +46,7 @@ def create(arch, image_size, channels, pretrained, progress):
     """
     model = Generator(image_size, channels)
     if pretrained:
-        state_dict = load_state_dict_from_url(model_urls[arch], progress=progress)
+        state_dict = load_state_dict_from_url(model_urls[arch], progress=progress, map_location=torch.device("cpu"))
         model.load_state_dict(state_dict)
     return model
 
