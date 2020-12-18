@@ -43,10 +43,10 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
 
         self.main = nn.Sequential(
-            nn.Linear(channels * image_size * image_size, 512),
+            nn.Linear(channels * image_size * image_size, 256),
             nn.LeakyReLU(0.2, inplace=True),
 
-            nn.Linear(512, 256),
+            nn.Linear(256, 256),
             nn.LeakyReLU(0.2, inplace=True),
 
             nn.Linear(256, 1),
