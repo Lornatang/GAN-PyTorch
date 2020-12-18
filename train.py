@@ -14,8 +14,8 @@
 import argparse
 import logging
 
-import ssrgan.models as models
-from ssrgan.utils.common import create_folder
+import gan_pytorch.models as models
+from gan_pytorch.utils import create_folder
 from trainer import Trainer
 
 model_names = sorted(name for name in models.__dict__
@@ -62,8 +62,8 @@ if __name__ == "__main__":
     # training parameters
     parser.add_argument("--start-epoch", default=0, type=int, metavar="N",
                         help="manual epoch number (useful on restarts)")
-    parser.add_argument("--iters", default=20000, type=int, metavar="N",
-                        help="The number of iterations is needed in the training of PSNR model. (default: 20000)")
+    parser.add_argument("--iters", default=1e5, type=int, metavar="N",
+                        help="The number of iterations is needed in the training of PSNR model. (default: 1e5)")
     parser.add_argument("-b", "--batch-size", default=64, type=int, metavar="N",
                         help="mini-batch size (default: 64), this is the total "
                              "batch size of all GPUs on the current node when "
@@ -72,8 +72,8 @@ if __name__ == "__main__":
                         help="The height / width of the input image to network. (default: 28).")
     parser.add_argument("--channels", type=int, default=1,
                         help="The number of channels of the image. (default: 1).")
-    parser.add_argument("--lr", type=float, default=1e-4,
-                        help="Learning rate. (default:1e-4)")
+    parser.add_argument("--lr", type=float, default=3e-4,
+                        help="Learning rate. (default:3e-4)")
     args = parser.parse_args()
 
     print("##################################################\n")
