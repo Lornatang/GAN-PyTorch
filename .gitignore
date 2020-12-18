@@ -131,11 +131,10 @@ dmypy.json
 
 # custom
 data/MNIST
+data/FashionMNIST
+data/cifar-10-python
+data/cifar-10-python.tar.gz
+data/cifar-10-batches-py
+
 output
-framework/static/mnist
-framework/static/fmnist
-imgs/
-research/data
-checkpoints/
-*.pth
-将删除 framework/static/cifar/
+weights/*.pth
