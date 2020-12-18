@@ -116,7 +116,7 @@ class Trainer(object):
 
         self.adversarial_criterion = nn.BCELoss().to(self.device)
         logger.info(f"Loss function:\n"
-                    f"\tAdversarial loss is BCEWithLogitsLoss")
+                    f"\tAdversarial loss is BCELoss")
 
     def run(self):
         args = self.args
