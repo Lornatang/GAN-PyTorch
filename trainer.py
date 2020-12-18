@@ -97,7 +97,7 @@ class Trainer(object):
             self.generator = models.__dict__[args.arch](image_size=args.image_size,
                                                         channels=args.channels).to(self.device)
         logger.info(f"Creating discriminator model")
-        self.discriminator = discriminator().to(self.device)
+        self.discriminator = discriminator(image_size=args.image_size, channels=args.channels).to(self.device)
 
         self.generator = self.generator.apply(weights_init)
         self.discriminator = self.discriminator.apply(weights_init)
