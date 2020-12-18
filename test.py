@@ -14,9 +14,12 @@
 import argparse
 import logging
 
-import ssrgan.models as models
-from ssrgan.utils.common import create_folder
-from tester import Estimate
+import torch
+import torchvision.utils as vutils
+
+import gan_pytorch.models as models
+from gan_pytorch.utils import create_folder
+from gan_pytorch.utils import select_device
 
 model_names = sorted(name for name in models.__dict__
                      if name.islower() and not name.startswith("__")
@@ -28,30 +31,17 @@ logging.basicConfig(format="[ %(levelname)s ] %(message)s", level=logging.INFO)
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Research and application of GAN based super resolution "
                                                  "technology for pathological microscopic images.")
-    # basic parameters
-    parser.add_argument("--lr", type=str, required=True,
-                        help="Test low resolution image name.")
-    parser.add_argument("--hr", type=str, required=True,
-                        help="Raw high resolution image name.")
-    parser.add_argument("--outf", default="test", type=str, metavar="PATH",
-                        help="The location of the image in the evaluation process. (default: ``test``).")
-    parser.add_argument("--device", default="cpu",
-                        help="device id i.e. `0` or `0,1` or `cpu`. (default: ``cpu``).")
-    parser.add_argument("--detail", dest="detail", action="store_true",
-                        help="Use comprehensive assessment.")
-
-    # model parameters
     parser.add_argument("-a", "--arch", metavar="ARCH", default="bionet",
                         choices=model_names,
                         help="model architecture: " +
                              " | ".join(model_names) +
-                             " (default: bionet)")
-    parser.add_argument("--upscale-factor", type=int, default=4, choices=[4],
-                        help="Low to high resolution scaling factor. (default:4).")
-    parser.add_argument("--model-path", default="", type=str, metavar="PATH",
-                        help="Path to latest checkpoint for model. (default: ````).")
-    parser.add_argument("--pretrained", dest="pretrained", action="store_true",
-                        help="Use pre-trained model.")
+                             " (default: mnist)")
+    parser.add_argument("-n", "--num-images", type=int, default=64,
+                        help="How many samples are generated at one time. (default: 64).")
+    parser.add_argument("--outf", default="test", type=str, metavar="PATH",
+                        help="The location of the image in the evaluation process. (default: ``test``).")
+    parser.add_argument("--device", default="cpu",
+                        help="device id i.e. `0` or `0,1` or `cpu`. (default: ``cpu``).")
 
     args = parser.parse_args()
 
@@ -60,17 +50,21 @@ if __name__ == "__main__":
     print(args)
 
     create_folder(args.outf)
-    detail = True if args.detail else False
 
     logger.info("TestEngine:")
-    print("\tAPI version .......... 0.1.1")
+    print("\tAPI version .......... 0.1.0")
     print("\tBuild ................ 2020.11.30-1116-0c5adc7e")
 
     logger.info("Creating Testing Engine")
-    estimate = Estimate(args)
+    device = select_device(args.device)
+    model = torch.hub.load("Lornatang/GAN-PyTorch", "mnist", pretrained=True)
+    model = model.to(device)
 
-    logger.info("Staring testing model")
-    estimate.run()
+    noise = torch.randn(args.num_images, 100, device=device)
+    with torch.no_grad():
+        generated_images = model(noise)
+
+    vutils.save_image(generated_images, "test.bmp")
     print("##################################################\n")
 
-    logger.info("Test single image performance evaluation completed successfully.\n")
+    logger.info("Test completed successfully.\n")
