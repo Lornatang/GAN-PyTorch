@@ -103,13 +103,13 @@ class Trainer(object):
         self.discriminator = self.discriminator.apply(weights_init)
 
         # Parameters of pre training model.
-        self.epochs = int(args.iters // len(self.dataloader))
+        self.epochs = int(int(args.iters) // len(self.dataloader))
         self.optimizer_g = torch.optim.Adam(self.generator.parameters(), lr=args.lr, betas=(0.5, 0.999))
         self.optimizer_d = torch.optim.Adam(self.discriminator.parameters(), lr=args.lr, betas=(0.5, 0.999))
 
         logger.info(f"Model training parameters:\n"
-                    f"\tIters is {args.iters}\n"
-                    f"\tEpoch is {self.epochs}\n"
+                    f"\tIters is {int(args.iters)}\n"
+                    f"\tEpoch is {int(self.epochs)}\n"
                     f"\tOptimizer Adam\n"
                     f"\tLearning rate {args.lr}\n"
                     f"\tBetas (0.5, 0.999)")
