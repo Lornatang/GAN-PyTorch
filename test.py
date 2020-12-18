@@ -31,7 +31,7 @@ logging.basicConfig(format="[ %(levelname)s ] %(message)s", level=logging.INFO)
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Research and application of GAN based super resolution "
                                                  "technology for pathological microscopic images.")
-    parser.add_argument("-a", "--arch", metavar="ARCH", default="bionet",
+    parser.add_argument("-a", "--arch", metavar="ARCH", default="mnist",
                         choices=model_names,
                         help="model architecture: " +
                              " | ".join(model_names) +
