@@ -17,13 +17,13 @@ from torch.hub import load_state_dict_from_url
 
 __all__ = [
     "Discriminator", "Generator", "discriminator",
-    "mnist", "fmnist", "cifar"
+    "mnist", "fashion_mnist", "cifar10"
 ]
 
 model_urls = {
-    "mnist": "",
-    "fashion-mnist": "",
-    "cifar": ""
+    "mnist": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/mnist-95e6969f.pth",
+    "fashion-mnist": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/fmnist-97f2093e.pth",
+    "cifar10": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/cifar10-8cbb7b63.pth"
 }
 
 
@@ -109,6 +109,14 @@ class Generator(nn.Module):
         return out
 
 
+def _gan(arch, image_size, channels, pretrained, progress):
+    model = Generator(image_size, channels)
+    if pretrained:
+        state_dict = load_state_dict_from_url(model_urls[arch], progress=progress)
+        model.load_state_dict(state_dict)
+    return model
+
+
 def discriminator(**kwargs) -> Discriminator:
     r"""GAN model architecture from the
     `"One weird trick..." <https://arxiv.org/abs/1406.2661>`_ paper.
@@ -117,43 +125,31 @@ def discriminator(**kwargs) -> Discriminator:
     return model
 
 
-def mnist(pretrained: bool = False, progress: bool = True, **kwargs) -> Generator:
+def mnist(pretrained: bool = False, progress: bool = True) -> Generator:
     r"""GAN model architecture from the
     `"One weird trick..." <https://arxiv.org/abs/1406.2661>`_ paper.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    model = Generator(**kwargs)
-    if pretrained:
-        state_dict = load_state_dict_from_url(model_urls["mnist"], progress=progress)
-        model.load_state_dict(state_dict)
-    return model
+    return _gan("mnist", 28, 1, pretrained, progress)
 
 
-def fmnist(pretrained: bool = False, progress: bool = True, **kwargs) -> Generator:
+def fashion_mnist(pretrained: bool = False, progress: bool = True) -> Generator:
     r"""GAN model architecture from the
     `"One weird trick..." <https://arxiv.org/abs/1406.2661>`_ paper.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    model = Generator(**kwargs)
-    if pretrained:
-        state_dict = load_state_dict_from_url(model_urls["fashion-mnist"], progress=progress)
-        model.load_state_dict(state_dict)
-    return model
+    return _gan("fashion-mnist", 28, 1, pretrained, progress)
 
 
-def cifar(pretrained: bool = False, progress: bool = True, **kwargs) -> Generator:
+def cifar10(pretrained: bool = False, progress: bool = True) -> Generator:
     r"""GAN model architecture from the
     `"One weird trick..." <https://arxiv.org/abs/1406.2661>`_ paper.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    model = Generator(**kwargs)
-    if pretrained:
-        state_dict = load_state_dict_from_url(model_urls["cifar"], progress=progress)
-        model.load_state_dict(state_dict)
-    return model
+    return _gan("cifar10", 32, 3, pretrained, progress)

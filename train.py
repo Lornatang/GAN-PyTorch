@@ -30,7 +30,7 @@ if __name__ == "__main__":
                                                  "technology for pathological microscopic images.")
     # basic parameters
     parser.add_argument("--dataset", type=str, required=True,
-                        help="lsun | fashion-mnist | cifar10 |.")
+                        help="mnist | fashion-mnist | cifar10 |.")
     parser.add_argument("--dataroot", type=str, default="data",
                         help="Path to dataset. (default: ``data``).")
     parser.add_argument("-j", "--workers", default=4, type=int, metavar="N",
