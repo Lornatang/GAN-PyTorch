@@ -50,8 +50,6 @@ if __name__ == "__main__":
                         help="model architecture: " +
                              " | ".join(model_names) +
                              " (default: mnist)")
-    parser.add_argument("--model-path", default="", type=str, metavar="PATH",
-                        help="Path to latest checkpoint for model. (default: ````).")
     parser.add_argument("--pretrained", dest="pretrained", action="store_true",
                         help="Use pre-trained model.")
     parser.add_argument("--netD", default="", type=str, metavar="PATH",
