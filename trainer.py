@@ -89,13 +89,10 @@ class Trainer(object):
         self.device = select_device(args.device, batch_size=1)
         if args.pretrained:
             logger.info(f"Using pre-trained model `{args.arch}`")
-            self.generator = models.__dict__[args.arch](pretrained=True,
-                                                        image_size=args.image_size,
-                                                        channels=args.channels).to(self.device)
+            self.generator = models.__dict__[args.arch](pretrained=True).to(self.device)
         else:
             logger.info(f"Creating model `{args.arch}`")
-            self.generator = models.__dict__[args.arch](image_size=args.image_size,
-                                                        channels=args.channels).to(self.device)
+            self.generator = models.__dict__[args.arch]().to(self.device)
         logger.info(f"Creating discriminator model")
         self.discriminator = discriminator(image_size=args.image_size, channels=args.channels).to(self.device)
 
