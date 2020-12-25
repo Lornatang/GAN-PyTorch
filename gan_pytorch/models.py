@@ -21,9 +21,9 @@ __all__ = [
 ]
 
 model_urls = {
-    "mnist": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/mnist-95e6969f.pth",
-    "tfd": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/fmnist-97f2093e.pth",
-    "cifar10": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/cifar10-8cbb7b63.pth"
+    "mnist": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.1/mnist-708f7db0.pth",
+    "tfd": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.1/tfd-8b1bd763.pth",
+    "cifar10": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.1/cifar10-cf8c213e.pth"
 }
 
 
