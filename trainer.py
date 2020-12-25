@@ -186,10 +186,8 @@ class Trainer(object):
                     vutils.save_image(fake.detach(), os.path.join("output", f"fake_samples_{index}.bmp"))
 
                     # do checkpointing
-                    torch.save(self.generator.state_dict(),
-                               f"weights/netG_iter_{index}.pth")
-                    torch.save(self.discriminator.state_dict(),
-                               f"weights/netD_iter_{index}.pth")
+                    torch.save(self.generator.state_dict(), f"weights/netG_iter_{index}.pth")
+                    torch.save(self.discriminator.state_dict(), f"weights/netD_iter_{index}.pth")
 
                 if index == int(args.iters):  # If the iteration is reached, exit.
                     break
