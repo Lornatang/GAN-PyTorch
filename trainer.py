@@ -181,9 +181,13 @@ class Trainer(object):
                 index = i + epoch * len(self.dataloader) + 1
                 # The image is saved every 1000 epoch.
                 if index % args.save_freq == 0:
-                    vutils.save_image(input, os.path.join("output", "real_samples.bmp"))
+                    vutils.save_image(input,
+                                      os.path.join("output", "real_samples.bmp"),
+                                      normalize=True)
                     fake = self.generator(fixed_noise)
-                    vutils.save_image(fake.detach(), os.path.join("output", f"fake_samples_{index}.bmp"))
+                    vutils.save_image(fake.detach(),
+                                      os.path.join("output", f"fake_samples_{index}.bmp"),
+                                      normalize=True)
 
                     # do checkpointing
                     torch.save(self.generator.state_dict(), f"weights/netG_iter_{index}.pth")
