@@ -102,6 +102,7 @@ class Trainer(object):
         self.discriminator = self.discriminator.apply(weights_init)
 
         # Parameters of pre training model.
+        self.start_epoch = math.floor(args.start_iter / len(self.dataloader))
         self.epochs = math.ceil(args.iters / len(self.dataloader))
         self.optimizer_g = torch.optim.Adam(self.generator.parameters(), lr=args.lr, betas=(0.5, 0.999))
         self.optimizer_d = torch.optim.Adam(self.discriminator.parameters(), lr=args.lr, betas=(0.5, 0.999))
@@ -131,7 +132,7 @@ class Trainer(object):
 
         fixed_noise = torch.randn(args.batch_size, 100, device=self.device)
 
-        for epoch in range(args.start_epoch, self.epochs):
+        for epoch in range(self.start_epoch, self.epochs):
             progress_bar = tqdm(enumerate(self.dataloader), total=len(self.dataloader))
             for i, data in progress_bar:
                 input = data[0].to(self.device)
@@ -186,9 +187,9 @@ class Trainer(object):
 
                     # do checkpointing
                     torch.save(self.generator.state_dict(),
-                               f"weights/netG_epoch_{(epoch + 1) * len(self.dataloader)}.pth")
+                               f"weights/netG_iter_{index}.pth")
                     torch.save(self.discriminator.state_dict(),
-                               f"weights/netD_epoch_{(epoch + 1) * len(self.dataloader)}.pth")
+                               f"weights/netD_iter_{index}.pth")
 
                 if index == int(args.iters):  # If the iteration is reached, exit.
                     break

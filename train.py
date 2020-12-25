@@ -58,8 +58,8 @@ if __name__ == "__main__":
                         help="Path to latest generator checkpoint. (default: ````).")
 
     # training parameters
-    parser.add_argument("--start-epoch", default=0, type=int, metavar="N",
-                        help="manual epoch number (useful on restarts)")
+    parser.add_argument("--start-iter", default=0, type=int, metavar="N",
+                        help="manual iter number (useful on restarts)")
     parser.add_argument("--iters", default=40000, type=int, metavar="N",
                         help="The number of iterations is needed in the training of PSNR model. (default: 40000)")
     parser.add_argument("-b", "--batch-size", default=64, type=int, metavar="N",
