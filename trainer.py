@@ -48,22 +48,22 @@ class Trainer(object):
         if args.dataset == "mnist":
             dataset = torchvision.datasets.MNIST(root=args.dataroot, download=True,
                                                  transform=transforms.Compose([
-                                                     transforms.Resize(args.image_size),
+                                                     transforms.Resize((args.image_size, args.image_size)),
                                                      transforms.ToTensor(),
                                                      transforms.Normalize((0.5,), (0.5,))
                                                  ]))
         elif args.dataset == "tfd":
-            dataset = torchvision.datasets.ImageNet(root=args.dataroot,
-                                                    transform=transforms.Compose([
-                                                        transforms.Resize(args.image_size),
-                                                        transforms.Grayscale(),
-                                                        transforms.ToTensor(),
-                                                        transforms.Normalize((0.5,), (0.5,))
-                                                    ]))
+            dataset = torchvision.datasets.ImageFolder(root=args.dataroot,
+                                                       transform=transforms.Compose([
+                                                           transforms.Resize((args.image_size, args.image_size)),
+                                                           transforms.Grayscale(),
+                                                           transforms.ToTensor(),
+                                                           transforms.Normalize((0.5,), (0.5,))
+                                                       ]))
         elif args.dataset == "cifar10":
             dataset = torchvision.datasets.CIFAR10(root=args.dataroot, download=True,
                                                    transform=transforms.Compose([
-                                                       transforms.Resize(args.image_size),
+                                                       transforms.Resize((args.image_size, args.image_size)),
                                                        transforms.ToTensor(),
                                                        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
                                                    ]))
@@ -71,7 +71,7 @@ class Trainer(object):
         else:
             dataset = torchvision.datasets.MNIST(root=args.dataroot, download=True,
                                                  transform=transforms.Compose([
-                                                     transforms.Resize(args.image_size),
+                                                     transforms.Resize((args.image_size, args.image_size)),
                                                      transforms.ToTensor(),
                                                      transforms.Normalize((0.5,), (0.5,))
                                                  ]))
@@ -184,9 +184,11 @@ class Trainer(object):
                     fake = self.generator(fixed_noise)
                     vutils.save_image(fake.detach(), os.path.join("output", f"fake_samples_{index}.bmp"))
 
+                    # do checkpointing
+                    torch.save(self.generator.state_dict(),
+                               f"weights/netG_epoch_{(epoch + 1) * len(self.dataloader)}.pth")
+                    torch.save(self.discriminator.state_dict(),
+                               f"weights/netD_epoch_{(epoch + 1) * len(self.dataloader)}.pth")
+
                 if index == int(args.iters):  # If the iteration is reached, exit.
                     break
-
-            # do checkpointing
-            torch.save(self.generator.state_dict(), f"weights/netG_epoch_{(epoch + 1) * len(self.dataloader)}.pth")
-            torch.save(self.discriminator.state_dict(), f"weights/netD_epoch_{(epoch + 1) * len(self.dataloader)}.pth")
