@@ -68,8 +68,8 @@ pathological microscopic images.
 optional arguments:
   -h, --help            show this help message and exit
   -a ARCH, --arch ARCH  model architecture: _gan | cifar10 | discriminator |
-                        fashion_mnist | load_state_dict_from_url | mnist
-                        (default: mnist)
+                        load_state_dict_from_url | mnist | tfd (default:
+                        mnist)
   -n NUM_IMAGES, --num-images NUM_IMAGES
                         How many samples are generated at one time. (default:
                         64).
@@ -90,32 +90,33 @@ $ python3 test.py -a mnist
 ```text
 usage: train.py [-h] --dataset DATASET [--dataroot DATAROOT] [-j N]
                 [--manualSeed MANUALSEED] [--device DEVICE] [-p N] [-a ARCH]
-                [--model-path PATH] [--pretrained] [--netD PATH] [--netG PATH]
-                [--start-epoch N] [--iters N] [-b N] [--image-size IMAGE_SIZE]
-                [--channels CHANNELS] [--lr LR]
+                [--pretrained] [--netD PATH] [--netG PATH] [--start-iter N]
+                [--iters N] [-b N] [--image-size IMAGE_SIZE]
+                [--channels CHANNELS] [--hidden-channels HIDDEN_CHANNELS]
+                [--lr LR]
 
 Research and application of GAN based super resolution technology for
 pathological microscopic images.
 
 optional arguments:
   -h, --help            show this help message and exit
-  --dataset DATASET     mnist | fashion-mnist | cifar10 |.
+  --dataset DATASET     mnist | tfd | cifar10 |.
   --dataroot DATAROOT   Path to dataset. (default: ``data``).
   -j N, --workers N     Number of data loading workers. (default:4)
   --manualSeed MANUALSEED
                         Seed for initializing training. (default:1111)
   --device DEVICE       device id i.e. `0` or `0,1` or `cpu`. (default: ````).
-  -p N, --save-freq N   Save frequency. (default: 50).
-  -a ARCH, --arch ARCH  model architecture: cifar10 | discriminator | fashion-mnist |
-                        mnist (default: mnist)
-  --model-path PATH     Path to latest checkpoint for model. (default: ````).
+  -p N, --save-freq N   Save frequency. (default: 1000).
+  -a ARCH, --arch ARCH  model architecture: _gan | cifar10 | discriminator |
+                        load_state_dict_from_url | mnist | tfd (default:
+                        mnist)
   --pretrained          Use pre-trained model.
   --netD PATH           Path to latest discriminator checkpoint. (default:
                         ````).
   --netG PATH           Path to latest generator checkpoint. (default: ````).
-  --start-epoch N       manual epoch number (useful on restarts)
+  --start-iter N        manual iter number (useful on restarts)
   --iters N             The number of iterations is needed in the training of
-                        PSNR model. (default: 1e5)
+                        PSNR model. (default: 40000)
   -b N, --batch-size N  mini-batch size (default: 64), this is the total batch
                         size of all GPUs on the current node when using Data
                         Parallel or Distributed Data Parallel.
@@ -123,7 +124,11 @@ optional arguments:
                         The height / width of the input image to network.
                         (default: 28).
   --channels CHANNELS   The number of channels of the image. (default: 1).
+  --hidden-channels HIDDEN_CHANNELS
+                        The number of hidden channels of the image. (default:
+                        1200).
   --lr LR               Learning rate. (default:3e-4)
+
 
 # Example (e.g. MNIST)
 $ python3 train.py -a mnist --dataset mnist --image-size 28 --channels 1 --pretrained
@@ -136,9 +141,10 @@ $ python3 train.py -a mnist \
                    --dataset mnist \
                    --image-size 28 \
                    --channels 1 \
-                   --start-epoch 18 \
-                   --netG weights/netG_epoch_18.pth \
-                   --netD weights/netD_epoch_18.pth
+                   --hidden-channels 1200 \
+                   --start-iter 10000 \
+                   --netG weights/netG_iter_10000.pth \
+                   --netD weights/netD_iter_10000.pth
 ```
 
 ### Contributing
