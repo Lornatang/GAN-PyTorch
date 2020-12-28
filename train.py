@@ -70,8 +70,6 @@ if __name__ == "__main__":
                         help="The height / width of the input image to network. (default: 28).")
     parser.add_argument("--channels", type=int, default=1,
                         help="The number of channels of the image. (default: 1).")
-    parser.add_argument("--hidden-channels", type=int, default=240,
-                        help="The number of hidden channels of the discriminator. (default: 240).")
     parser.add_argument("--lr", type=float, default=0.0002,
                         help="Learning rate. (default:0.0002)")
     args = parser.parse_args()
