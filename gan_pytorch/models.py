@@ -121,7 +121,9 @@ class Generator(nn.Module):
 def _gan(arch, image_size, channels, pretrained, progress):
     model = Generator(image_size, channels)
     if pretrained:
-        state_dict = load_state_dict_from_url(model_urls[arch], progress=progress)
+        state_dict = load_state_dict_from_url(model_urls[arch], 
+                                              progress=progress, 
+                                              map_location=torch.device("cpu"))
         model.load_state_dict(state_dict)
     return model
 
