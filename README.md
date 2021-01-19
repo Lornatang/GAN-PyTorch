@@ -83,7 +83,7 @@ with torch.no_grad():
     generated_images = model(noise)
 
 # Save generate image.
-vutils.save_image(generated_images, "gan.png", normalize=True)
+vutils.save_image(generated_images, "mnist.png", normalize=True)
 ```
 
 #### Base call
