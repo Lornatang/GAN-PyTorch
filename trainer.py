@@ -182,11 +182,11 @@ class Trainer(object):
                 # The image is saved every 1000 epoch.
                 if iters % 1000 == 0:
                     vutils.save_image(input,
-                                      os.path.join("output", "real_samples.bmp"),
+                                      os.path.join("output", "real_samples.png"),
                                       normalize=True)
                     fake = self.generator(fixed_noise)
                     vutils.save_image(fake.detach(),
-                                      os.path.join("output", f"fake_samples_{iters}.bmp"),
+                                      os.path.join("output", f"fake_samples_{iters}.png"),
                                       normalize=True)
 
                     # do checkpointing
