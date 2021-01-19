@@ -31,9 +31,9 @@ from torch.hub import load_state_dict_from_url
 from gan_pytorch.models import Generator
 
 model_urls = {
-    "mnist": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/GAN_mnist-5539a1a7.pth",
-    "tfd": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/GAN_tfd-4e44e2ca.pth",
-    "cifar10": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/GAN_cifar10-5f3f1de6.pth"
+    "mnist": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/GAN_mnist-03265dde.pth",
+    "tfd": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/GAN_tfd-4b754878.pth",
+    "cifar10": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/GAN_cifar10-931f6879.pth"
 }
 
 dependencies = ["torch"]
