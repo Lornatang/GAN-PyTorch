@@ -27,7 +27,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = "gan_pytorch"
-DESCRIPTION = "An implementation of GAN algorithm using pytorch framework"
+DESCRIPTION = "An implementation of GAN algorithm using PyTorch framework."
 URL = "https://github.com/Lornatang/GAN-PyTorch"
 EMAIL = "liu_changyu@dakewe.com"
 AUTHOR = "Liu Changyu"
