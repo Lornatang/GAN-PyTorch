@@ -46,14 +46,14 @@ class Trainer(object):
         logger.info("Load training dataset")
         # Selection of appropriate treatment equipment.
         if args.dataset == "mnist":
-            dataset = torchvision.datasets.MNIST(root=args.dataroot, download=True,
+            dataset = torchvision.datasets.MNIST(root=args.data, download=True,
                                                  transform=transforms.Compose([
                                                      transforms.Resize((args.image_size, args.image_size)),
                                                      transforms.ToTensor(),
                                                      transforms.Normalize((0.5,), (0.5,))
                                                  ]))
         elif args.dataset == "tfd":
-            dataset = torchvision.datasets.ImageFolder(root=args.dataroot,
+            dataset = torchvision.datasets.ImageFolder(root=args.data,
                                                        transform=transforms.Compose([
                                                            transforms.Resize((args.image_size, args.image_size)),
                                                            transforms.Grayscale(),
@@ -61,7 +61,7 @@ class Trainer(object):
                                                            transforms.Normalize((0.5,), (0.5,))
                                                        ]))
         elif args.dataset == "cifar10":
-            dataset = torchvision.datasets.CIFAR10(root=args.dataroot, download=True,
+            dataset = torchvision.datasets.CIFAR10(root=args.data, download=True,
                                                    transform=transforms.Compose([
                                                        transforms.Resize((args.image_size, args.image_size)),
                                                        transforms.ToTensor(),
@@ -69,7 +69,7 @@ class Trainer(object):
                                                    ]))
 
         else:
-            dataset = torchvision.datasets.MNIST(root=args.dataroot, download=True,
+            dataset = torchvision.datasets.MNIST(root=args.data, download=True,
                                                  transform=transforms.Compose([
                                                      transforms.Resize((args.image_size, args.image_size)),
                                                      transforms.ToTensor(),
@@ -82,7 +82,7 @@ class Trainer(object):
                                                       num_workers=int(args.workers))
 
         logger.info(f"Train Dataset information:\n"
-                    f"\tTrain Dataset dir is `{os.getcwd()}/{args.dataroot}`\n"
+                    f"\tTrain Dataset dir is `{os.getcwd()}/{args.data}`\n"
                     f"\tBatch size is {args.batch_size}\n"
                     f"\tWorkers is {int(args.workers)}\n"
                     f"\tLoad dataset to CUDA")
