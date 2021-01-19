@@ -167,7 +167,6 @@ $ python3 train.py data \
                    -a mnist \
                    --image-size 28 \
                    --channels 1 \
-                   --hidden-channels 1200 \
                    --start-iter 10000 \
                    --netG weights/mnist_G_iter_10000.pth \
                    --netD weights/mnist_D_iter_10000.pth \
