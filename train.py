@@ -29,6 +29,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="An implementation of GAN algorithm using PyTorch framework.")
     parser.add_argument("data", metavar="DIR",
                         help="path to dataset")
+    parser.add_argument("--dataset", type=str, required=True,
+                        help="mnist | tfd | cifar10 |.")
     parser.add_argument("-a", "--arch", metavar="ARCH", default="mnist",
                         choices=model_names,
                         help="model architecture: " +
@@ -58,8 +60,8 @@ if __name__ == "__main__":
                         help="Path to latest generator checkpoint. (default: ````).")
     parser.add_argument("--manualSeed", type=int, default=1111,
                         help="Seed for initializing training. (default:1111)")
-    parser.add_argument("--device", default="",
-                        help="device id i.e. `0` or `0,1` or `cpu`. (default: ````).")
+    parser.add_argument("--device", default="0",
+                        help="device id i.e. `0` or `0,1` or `cpu`. (default: ``0``).")
     args = parser.parse_args()
 
     print("##################################################\n")

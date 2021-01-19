@@ -93,8 +93,7 @@ Using pre training model to generate pictures.
 ```text
 usage: test.py [-h] [-a ARCH] [-n NUM_IMAGES] [--outf PATH] [--device DEVICE]
 
-Research and application of GAN based super resolution technology for
-pathological microscopic images.
+An implementation of GAN algorithm using PyTorch framework.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -110,7 +109,7 @@ optional arguments:
                         ``cpu``).
 
 # Example (e.g. MNIST)
-$ python3 test.py -a mnist
+$ python3 test.py -a mnist --device cpu
 ```
 
 <span align="center"><img src="assets/mnist.gif" alt="">
@@ -119,50 +118,45 @@ $ python3 test.py -a mnist
 ### Train (e.g. MNIST)
 
 ```text
-usage: train.py [-h] --dataset DATASET [--dataroot DATAROOT] [-j N]
-                [--manualSeed MANUALSEED] [--device DEVICE] [-p N] [-a ARCH]
-                [--pretrained] [--netD PATH] [--netG PATH] [--start-iter N]
-                [--iters N] [-b N] [--image-size IMAGE_SIZE]
-                [--channels CHANNELS] [--hidden-channels HIDDEN_CHANNELS]
-                [--lr LR]
+usage: train.py [-h] --dataset DATASET [-a ARCH] [-j N] [--start-iter N]
+                [--iters N] [-b N] [--lr LR] [--image-size IMAGE_SIZE]
+                [--channels CHANNELS] [--pretrained] [--netD PATH]
+                [--netG PATH] [--manualSeed MANUALSEED] [--device DEVICE]
+                DIR
 
-Research and application of GAN based super resolution technology for
-pathological microscopic images.
+An implementation of GAN algorithm using PyTorch framework.
+
+positional arguments:
+  DIR                   path to dataset
 
 optional arguments:
   -h, --help            show this help message and exit
   --dataset DATASET     mnist | tfd | cifar10 |.
-  --dataroot DATAROOT   Path to dataset. (default: ``data``).
-  -j N, --workers N     Number of data loading workers. (default:4)
-  --manualSeed MANUALSEED
-                        Seed for initializing training. (default:1111)
-  --device DEVICE       device id i.e. `0` or `0,1` or `cpu`. (default: ````).
-  -p N, --save-freq N   Save frequency. (default: 1000).
   -a ARCH, --arch ARCH  model architecture: _gan | cifar10 | discriminator |
                         load_state_dict_from_url | mnist | tfd (default:
                         mnist)
-  --pretrained          Use pre-trained model.
-  --netD PATH           Path to latest discriminator checkpoint. (default:
-                        ````).
-  --netG PATH           Path to latest generator checkpoint. (default: ````).
+  -j N, --workers N     Number of data loading workers. (default:8)
   --start-iter N        manual iter number (useful on restarts)
   --iters N             The number of iterations is needed in the training of
-                        PSNR model. (default: 40000)
+                        model. (default: 50000)
   -b N, --batch-size N  mini-batch size (default: 64), this is the total batch
                         size of all GPUs on the current node when using Data
                         Parallel or Distributed Data Parallel.
+  --lr LR               Learning rate. (default:0.0002)
   --image-size IMAGE_SIZE
                         The height / width of the input image to network.
                         (default: 28).
   --channels CHANNELS   The number of channels of the image. (default: 1).
-  --hidden-channels HIDDEN_CHANNELS
-                        The number of hidden channels of the image. (default:
-                        1200).
-  --lr LR               Learning rate. (default:3e-4)
-
+  --pretrained          Use pre-trained model.
+  --netD PATH           Path to latest discriminator checkpoint. (default:
+                        ````).
+  --netG PATH           Path to latest generator checkpoint. (default: ````).
+  --manualSeed MANUALSEED
+                        Seed for initializing training. (default:1111)
+  --device DEVICE       device id i.e. `0` or `0,1` or `cpu`. (default: ``0``).
 
 # Example (e.g. MNIST)
-$ python3 train.py -a mnist --dataset mnist --image-size 28 --channels 1 --pretrained
+$ python3 train.py data --dataset mnist -a mnist --image-size 28 --channels 1 --pretrained --device 0
 ```
 
 If you want to load weights that you've trained before, run the following command.
