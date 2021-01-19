@@ -15,7 +15,15 @@
 """File for accessing GAN via PyTorch Hub https://pytorch.org/hub/
 Usage:
     import torch
-    model = torch.hub.load("Lornatang/GAN-PyTorch", "mnist", pretrained=True, image_size=28, channels=1)
+    import torchvision.utils as vutils
+
+    # Choose to use the device.
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+
+    # Load the model into the specified device.
+    model = torch.hub.load("Lornatang/GAN-PyTorch", "mnist", pretrained=True, verbose=False)
+    model.eval()
+    model = model.to(device)
 """
 import torch
 from torch.hub import load_state_dict_from_url
@@ -23,9 +31,9 @@ from torch.hub import load_state_dict_from_url
 from gan_pytorch.models import Generator
 
 model_urls = {
-    "mnist": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.2/mnist-5539a1a7.pth",
-    "tfd": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.2/tfd-4e44e2ca.pth",
-    "cifar10": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.2/cifar10-5f3f1de6.pth"
+    "mnist": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/GAN_mnist-5539a1a7.pth",
+    "tfd": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/GAN_tfd-4e44e2ca.pth",
+    "cifar10": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/GAN_cifar10-5f3f1de6.pth"
 }
 
 dependencies = ["torch"]

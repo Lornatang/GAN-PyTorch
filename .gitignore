@@ -138,4 +138,8 @@ data/cifar-10-batches-py
 
 output
 test
-weights/*.pth
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.pth
