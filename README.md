@@ -162,14 +162,16 @@ $ python3 train.py data --dataset mnist -a mnist --image-size 28 --channels 1 --
 If you want to load weights that you've trained before, run the following command.
 
 ```bash
-$ python3 train.py -a mnist \
+$ python3 train.py data \
                    --dataset mnist \
+                   -a mnist \
                    --image-size 28 \
                    --channels 1 \
                    --hidden-channels 1200 \
                    --start-iter 10000 \
-                   --netG weights/netG_iter_10000.pth \
-                   --netD weights/netD_iter_10000.pth
+                   --netG weights/mnist_G_iter_10000.pth \
+                   --netD weights/mnist_D_iter_10000.pth \
+                   --device 0
 ```
 
 ### Contributing
