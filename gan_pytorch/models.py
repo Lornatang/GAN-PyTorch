@@ -153,7 +153,7 @@ def tfd(pretrained: bool = False, progress: bool = True) -> Generator:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    return _gan("tfd", 32, 1, pretrained, progress)
+    return _gan("tfd", 48, 1, pretrained, progress)
 
 
 def cifar10(pretrained: bool = False, progress: bool = True) -> Generator:
