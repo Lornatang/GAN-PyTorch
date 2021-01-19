@@ -180,7 +180,7 @@ class Trainer(object):
 
                 iters = i + epoch * len(self.dataloader) + 1
                 # The image is saved every 1000 epoch.
-                if iters % args.save_freq == 0:
+                if iters % 1000 == 0:
                     vutils.save_image(input,
                                       os.path.join("output", "real_samples.bmp"),
                                       normalize=True)
