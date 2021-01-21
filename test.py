@@ -63,7 +63,7 @@ if __name__ == "__main__":
     with torch.no_grad():
         generated_images = model(noise)
 
-    vutils.save_image(generated_images, f"{args.outf}/test.png")
+    vutils.save_image(generated_images, f"{args.outf}/test.png", normalize=True)
     print("##################################################\n")
 
     logger.info("Test completed successfully.\n")
