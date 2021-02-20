@@ -20,7 +20,7 @@ import torch
 import torch.backends.cudnn as cudnn
 
 __all__ = [
-    "create_folder", "init_torch_seeds", "select_device", "weights_init"
+    "create_folder", "init_torch_seeds", "select_device"
 ]
 
 logger = logging.getLogger(__name__)
@@ -92,13 +92,3 @@ def select_device(device: str = "", batch_size: int = 1) -> torch.device:
         logger.info("Using CPU.")
 
     return torch.device("cuda:0" if cuda else "cpu")
-
-
-# custom weights initialization called on netG and netD
-def weights_init(m):
-    classname = m.__class__.__name__
-    if classname.find("Conv") != -1:
-        torch.nn.init.normal_(m.weight, 0.0, 0.02)
-    elif classname.find("BatchNorm") != -1:
-        torch.nn.init.normal_(m.weight, 1.0, 0.02)
-        torch.nn.init.zeros_(m.bias)

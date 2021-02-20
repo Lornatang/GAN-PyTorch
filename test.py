@@ -13,6 +13,7 @@
 # ==============================================================================
 import argparse
 import logging
+import os
 
 import torch
 import torchvision.utils as vutils
@@ -37,8 +38,6 @@ if __name__ == "__main__":
                              " (default: mnist)")
     parser.add_argument("-n", "--num-images", type=int, default=64,
                         help="How many samples are generated at one time. (default: 64).")
-    parser.add_argument("--outf", default="test", type=str, metavar="PATH",
-                        help="The location of the image in the evaluation process. (default: ``test``).")
     parser.add_argument("--device", default="cpu",
                         help="device id i.e. `0` or `0,1` or `cpu`. (default: ``cpu``).")
 
@@ -48,7 +47,7 @@ if __name__ == "__main__":
     print("Run Testing Engine.\n")
     print(args)
 
-    create_folder(args.outf)
+    create_folder("test")
 
     logger.info("TestEngine:")
     print("\tAPI version .......... 0.1.0")
@@ -63,7 +62,7 @@ if __name__ == "__main__":
     with torch.no_grad():
         generated_images = model(noise)
 
-    vutils.save_image(generated_images, f"{args.outf}/test.png")
+    vutils.save_image(generated_images, os.path.join("test", "test.png"), normalize=True)
     print("##################################################\n")
 
     logger.info("Test completed successfully.\n")

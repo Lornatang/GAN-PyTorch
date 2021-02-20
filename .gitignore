@@ -129,15 +129,20 @@ dmypy.json
 # Mac file
 .DS_Store
 
-# custom
+# dataset
 data/MNIST
 data/TFD
 data/cifar-10-python
 data/cifar-10-python.tar.gz
 data/cifar-10-batches-py
+*.tgz
+*.zip
 
+# Program running create directory.
 output
 test
+
+# Program running create file.
 *.jpg
 *.jpeg
 *.png

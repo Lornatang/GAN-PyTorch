@@ -26,7 +26,6 @@ import gan_pytorch.models as models
 from gan_pytorch.models import discriminator
 from gan_pytorch.utils import init_torch_seeds
 from gan_pytorch.utils import select_device
-from gan_pytorch.utils import weights_init
 
 model_names = sorted(name for name in models.__dict__
                      if name.islower() and not name.startswith("__")
@@ -96,10 +95,7 @@ class Trainer(object):
             logger.info(f"Creating model `{args.arch}`")
             self.generator = models.__dict__[args.arch]().to(self.device)
         logger.info(f"Creating discriminator model")
-        self.discriminator = discriminator().to(self.device)
-
-        self.generator = self.generator.apply(weights_init)
-        self.discriminator = self.discriminator.apply(weights_init)
+        self.discriminator = discriminator(image_size=args.image_size, channels=args.channels).to(self.device)
 
         # Parameters of pre training model.
         self.start_epoch = math.floor(args.start_iter / len(self.dataloader))
@@ -116,7 +112,7 @@ class Trainer(object):
 
         self.adversarial_criterion = nn.BCELoss().to(self.device)
         logger.info(f"Loss function:\n"
-                    f"\tAdversarial loss is BCELoss")
+                    f"\tAdversarial loss is BCELoss.")
 
     def run(self):
         args = self.args
@@ -137,8 +133,10 @@ class Trainer(object):
             for i, data in progress_bar:
                 input = data[0].to(self.device)
                 batch_size = input.size(0)
+
                 real_label = torch.full((batch_size, 1), 1, dtype=input.dtype, device=self.device)
                 fake_label = torch.full((batch_size, 1), 0, dtype=input.dtype, device=self.device)
+                noise = torch.randn(batch_size, 100, device=self.device)
 
                 ##############################################
                 # (1) Update D network: max E(x)[log(D(x))] + E(z)[log(1- D(z))]
@@ -153,7 +151,6 @@ class Trainer(object):
                 D_x = output.mean().item()
 
                 # train with fake
-                noise = torch.randn(batch_size, 100, device=self.device)
                 fake = self.generator(noise)
                 output = self.discriminator(fake.detach())
                 errD_fake = self.adversarial_criterion(output, fake_label)
@@ -165,7 +162,7 @@ class Trainer(object):
                 ##############################################
                 # (2) Update G network: min E(z)[log(1- D(z))]
                 ##############################################
-                # Set generator gradients to zero
+                # Set generator gradients to zero.
                 self.generator.zero_grad()
 
                 output = self.discriminator(fake)
@@ -182,16 +179,18 @@ class Trainer(object):
                 # The image is saved every 1000 epoch.
                 if iters % 1000 == 0:
                     vutils.save_image(input,
-                                      os.path.join("output", "real_samples.png"),
+                                      os.path.join("run", "real_samples.png"),
                                       normalize=True)
                     fake = self.generator(fixed_noise)
                     vutils.save_image(fake.detach(),
-                                      os.path.join("output", f"fake_samples_{iters}.png"),
+                                      os.path.join("run", f"fake_samples_{iters}.png"),
                                       normalize=True)
 
                     # do checkpointing
-                    torch.save(self.generator.state_dict(), f"weights/{args.arch}_G_iter_{iters}.pth")
-                    torch.save(self.discriminator.state_dict(), f"weights/{args.arch}_D_iter_{iters}.pth")
+                    torch.save(self.generator.state_dict(),
+                               os.path.join("weights", f"{args.arch}_G_iter_{iters}.pth"))
+                    torch.save(self.discriminator.state_dict(),
+                               os.path.join("weights", f"{args.arch}_D_iter_{iters}.pth"))
 
                 if iters == int(args.iters):  # If the iteration is reached, exit.
                     break

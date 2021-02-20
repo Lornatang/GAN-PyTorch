@@ -68,7 +68,7 @@ if __name__ == "__main__":
     print("Run Training Engine.\n")
     print(args)
 
-    create_folder("output")
+    create_folder("run")
     create_folder("weights")
 
     logger.info("TrainingEngine:")
