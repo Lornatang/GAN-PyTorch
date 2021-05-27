@@ -1,4 +1,4 @@
-# Copyright 2020 Dakewe Biotech Corporation. All Rights Reserved.
+# Copyright 2021 Dakewe Biotech Corporation. All Rights Reserved.
 # Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #   You may obtain a copy of the License at
@@ -15,25 +15,15 @@
 """File for accessing GAN via PyTorch Hub https://pytorch.org/hub/
 Usage:
     import torch
-    import torchvision.utils as vutils
-
-    # Choose to use the device.
-    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-
-    # Load the model into the specified device.
-    model = torch.hub.load("Lornatang/GAN-PyTorch", "mnist", pretrained=True, progress=True, verbose=False)
-    model.eval()
-    model = model.to(device)
+    model = torch.hub.load("Lornatang/GAN-PyTorch", "gan", pretrained=True, progress=True, verbose=False)
 """
 import torch
 from torch.hub import load_state_dict_from_url
 
-from gan_pytorch.models import Generator
+from gan_pytorch.models.generator import Generator
 
 model_urls = {
-    "mnist": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/GAN_mnist-03265dde.pth",
-    "tfd": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/GAN_tfd-4b754878.pth",
-    "cifar10": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.1.0/GAN_cifar10-931f6879.pth"
+    "gan": "https://github.com/Lornatang/GAN-PyTorch/releases/download/0.2.0/GAN_MNIST-5c625d6ee2e8b3550f20080336ae81d7a2a8af93ea780a849d5b1dd4c428b133.pth",
 }
 
 dependencies = ["torch"]
@@ -59,31 +49,11 @@ def create(arch, image_size, channels, pretrained, progress):
     return model
 
 
-def mnist(pretrained: bool = False, progress: bool = True) -> Generator:
-    r"""GAN model architecture from the
-    `"One weird trick..." <https://arxiv.org/abs/1406.2661>`_ paper.
+def gan(pretrained: bool = False, progress: bool = True) -> Generator:
+    r"""GAN model architecture from the `"One weird trick..." <https://arxiv.org/abs/1406.2661>` paper.
+
     Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-        progress (bool): If True, displays a progress bar of the download to stderr
+        pretrained (bool): If True, returns a model pre-trained on ImageNet.
+        progress (bool): If True, displays a progress bar of the download to stderr.
     """
-    return create("mnist", 28, 1, pretrained, progress)
-
-
-def tfd(pretrained: bool = False, progress: bool = True) -> Generator:
-    r"""GAN model architecture from the
-    `"One weird trick..." <https://arxiv.org/abs/1406.2661>`_ paper.
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-        progress (bool): If True, displays a progress bar of the download to stderr
-    """
-    return create("tfd", 48, 1, pretrained, progress)
-
-
-def cifar10(pretrained: bool = False, progress: bool = True) -> Generator:
-    r"""GAN model architecture from the
-    `"One weird trick..." <https://arxiv.org/abs/1406.2661>`_ paper.
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-        progress (bool): If True, displays a progress bar of the download to stderr
-    """
-    return create("cifar10", 32, 3, pretrained, progress)
+    return create("gan", 28, 1, pretrained, progress)

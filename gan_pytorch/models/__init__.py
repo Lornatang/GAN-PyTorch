@@ -11,7 +11,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-from gan_pytorch.models import gan
-
-model = gan(pretrained=True)
-print(model)
+from .generator import gan
