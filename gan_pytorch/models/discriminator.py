@@ -65,7 +65,7 @@ class DiscriminatorForMNIST(nn.Module):
                     nn.init.constant_(m.bias, 0)
 
 
-def discriminator_fo_mnist(image_size: int = 28, channels: int = 1) -> DiscriminatorForMNIST:
+def discriminator_for_mnist(image_size: int = 28, channels: int = 1) -> DiscriminatorForMNIST:
     r"""GAN model architecture from the `"One weird trick..." <https://arxiv.org/abs/1406.2661>` paper.
     """
     model = DiscriminatorForMNIST(image_size, channels)

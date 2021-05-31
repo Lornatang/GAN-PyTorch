@@ -32,7 +32,7 @@ import torchvision.utils as vutils
 from torch.utils.tensorboard import SummaryWriter
 
 import gan_pytorch.models as models
-from gan_pytorch.models.discriminator import discriminator_fo_mnist
+from gan_pytorch.models.discriminator import discriminator_for_mnist
 from gan_pytorch.utils.common import AverageMeter
 from gan_pytorch.utils.common import ProgressMeter
 from gan_pytorch.utils.common import configure
@@ -149,7 +149,7 @@ def main_worker(gpu, ngpus_per_node, args):
         dist.init_process_group(backend=args.dist_backend, init_method=args.dist_url, world_size=args.world_size, rank=args.rank)
     # create model
     generator = configure(args)
-    discriminator = discriminator_fo_mnist(image_size=args.image_size, channels=args.channels)
+    discriminator = discriminator_for_mnist(image_size=args.image_size, channels=args.channels)
 
     if not torch.cuda.is_available():
         logger.warning("Using CPU, this will be slow.")
@@ -193,7 +193,7 @@ def main_worker(gpu, ngpus_per_node, args):
     # Loss of original GAN paper.
     adversarial_criterion = nn.BCELoss().cuda(args.gpu)
 
-    base_image = torch.randn(args.batch_size, 100)
+    base_image = torch.randn([args.batch_size, 100])
     if args.gpu is not None:
         base_image = base_image.cuda(args.gpu)
 
@@ -260,7 +260,7 @@ def main_worker(gpu, ngpus_per_node, args):
             real_label = torch.full((batch_size, 1), 1, dtype=inputs.dtype).cuda(args.gpu, non_blocking=True)
             fake_label = torch.full((batch_size, 1), 0, dtype=inputs.dtype).cuda(args.gpu, non_blocking=True)
 
-            noise = torch.randn(batch_size, 100)
+            noise = torch.randn([batch_size, 100])
             # Move data to special device.
             if args.gpu is not None:
                 noise = noise.cuda(args.gpu, non_blocking=True)
