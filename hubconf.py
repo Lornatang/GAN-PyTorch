@@ -28,7 +28,7 @@ model_urls = {
 dependencies = ["torch"]
 
 
-def _gan(arch: str, image_size: int, channels: int, pretrained: bool, progress: bool) -> Generator:
+def create(arch: str, image_size: int, channels: int, pretrained: bool, progress: bool) -> Generator:
     r""" Used to create GAN model.
 
     Args:
@@ -57,6 +57,6 @@ def gan(pretrained: bool = False, progress: bool = True) -> Generator:
         pretrained (bool): If True, returns a model pre-trained on ImageNet.
         progress (bool): If True, displays a progress bar of the download to stderr.
     """
-    model = _gan("gan", 28, 1, pretrained, progress)
+    model = create("gan", 28, 1, pretrained, progress)
 
     return model
