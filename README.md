@@ -2,7 +2,7 @@
 
 ### Overview
 
-This repository contains an op-for-op PyTorch reimplementation of [Generative Adversarial Networks](http://xxx.itp.ac.cn/pdf/1406.2661v1).
+This repository contains an op-for-op PyTorch reimplementation of [Generative Adversarial Networks](http://arxiv.org/pdf/1406.2661).
 
 ### Table of contents
 
@@ -83,6 +83,7 @@ vutils.save_image(generated_images, "mnist.png", normalize=True)
 ```
 
 #### Base call
+
 ```text
 usage: test.py [-h] [-a ARCH] [--num-images NUM_IMAGES] [--model-path PATH] [--pretrained] [--seed SEED] [--gpu GPU]
 
@@ -97,13 +98,14 @@ optional arguments:
   --gpu GPU             GPU id to use.
 
 # Example (e.g. MNIST)
-$ python3 test.py -a gan --pretrained --gpu 0 
+$ python3 test.py --arch gan --pretrained --gpu 0 
 ```
 
 <span align="center"><img src="assets/mnist.gif" alt="">
 </span>
 
 ### Train (e.g. MNIST)
+
 ```text
 usage: train.py [-h] [-a ARCH] [-j N] [--epochs N] [--start-epoch N] [-b N] [--lr LR] [--image-size IMAGE_SIZE] [--channels CHANNELS] [--netD PATH] [--netG PATH] [--pretrained] [--world-size WORLD_SIZE] [--rank RANK] [--dist-url DIST_URL]
                 [--dist-backend DIST_BACKEND] [--seed SEED] [--gpu GPU] [--multiprocessing-distributed]
@@ -138,13 +140,13 @@ optional arguments:
                         Use multi-processing distributed training to launch N processes per node, which has N GPUs. This is the fastest way to use PyTorch for either single node or multi node data parallel training.
 
 # Example (e.g. MNIST)
-$ python3 train.py -a gan --gpu 0 data
+$ python3 train.py --arch gan --gpu 0 data 
 ```
 
 If you want to load weights that you've trained before, run the following command.
 
 ```bash
-$ python3 train.py -a gan data --netD weights/Discriminator_epoch8.pth --netG weights/Generator_epoch8.pth --start-epoch 8 --gpu 0 data
+$ python3 train.py --arch gan --netD weights/Discriminator_epoch8.pth --netG weights/Generator_epoch8.pth --start-epoch 8 --gpu 0 data
 ```
 
 ### Contributing

@@ -18,13 +18,11 @@ import random
 import time
 import warnings
 
-import torch
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 import torch.multiprocessing as mp
 import torch.nn as nn
 import torch.nn.parallel
-import torch.optim
 import torch.utils.data.distributed
 import torchvision
 import torchvision.transforms as transforms
@@ -45,59 +43,8 @@ model_names = sorted(name for name in models.__dict__ if name.islower() and not 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format="[ %(levelname)s ] %(message)s", level=logging.INFO)
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-a", "--arch", metavar="ARCH", default="gan",
-                    choices=model_names,
-                    help="Model architecture: " +
-                         " | ".join(model_names) +
-                         ". (Default: gan)")
-parser.add_argument("data", metavar="DIR",
-                    help="Path to dataset.")
-parser.add_argument("-j", "--workers", default=4, type=int, metavar="N",
-                    help="Number of data loading workers. (Default: 4)")
-parser.add_argument("--epochs", default=128, type=int, metavar="N",
-                    help="Number of total epochs to run. (Default: 128)")
-parser.add_argument("--start-epoch", default=0, type=int, metavar="N",
-                    help="Manual epoch number (useful on restarts). (Default: 0)")
-parser.add_argument("-b", "--batch-size", default=64, type=int,
-                    metavar="N",
-                    help="Mini-batch size (default: 64), this is the total "
-                         "batch size of all GPUs on the current node when "
-                         "using Data Parallel or Distributed Data Parallel.")
-parser.add_argument("--lr", type=float, default=0.0002,
-                    help="Learning rate. (Default: 0.0002)")
-parser.add_argument("--image-size", type=int, default=28,
-                    help="Image size of high resolution image. (Default: 28)")
-parser.add_argument("--channels", type=int, default=1,
-                    help="The number of channels of the image. (Default: 1)")
-parser.add_argument("--netD", default="", type=str, metavar="PATH",
-                    help="Path to Discriminator checkpoint.")
-parser.add_argument("--netG", default="", type=str, metavar="PATH",
-                    help="Path to Generator checkpoint.")
-parser.add_argument("--pretrained", dest="pretrained", action="store_true",
-                    help="Use pre-trained model.")
-parser.add_argument("--world-size", default=-1, type=int,
-                    help="Number of nodes for distributed training.")
-parser.add_argument("--rank", default=-1, type=int,
-                    help="Node rank for distributed training. (Default: -1)")
-parser.add_argument("--dist-url", default="tcp://59.110.31.55:12345", type=str,
-                    help="url used to set up distributed training. (Default: `tcp://59.110.31.55:12345`)")
-parser.add_argument("--dist-backend", default="nccl", type=str,
-                    help="Distributed backend. (Default: `nccl`)")
-parser.add_argument("--seed", default=None, type=int,
-                    help="Seed for initializing training.")
-parser.add_argument("--gpu", default=None, type=int,
-                    help="GPU id to use.")
-parser.add_argument("--multiprocessing-distributed", action="store_true",
-                    help="Use multi-processing distributed training to launch "
-                         "N processes per node, which has N GPUs. This is the "
-                         "fastest way to use PyTorch for either single node or "
-                         "multi node data parallel training.")
 
-
-def main():
-    args = parser.parse_args()
-
+def main(args):
     if args.seed is not None:
         # In order to make the model repeatable, the first step is to set random seeds, and the second step is to set convolution algorithm.
         random.seed(args.seed)
@@ -127,15 +74,13 @@ def main():
         args.world_size = ngpus_per_node * args.world_size
         # Use torch.multiprocessing.spawn to launch distributed processes: the
         # main_worker process function
-        mp.spawn(main_worker, nprocs=ngpus_per_node, args=(ngpus_per_node, args))
+        mp.spawn(main_worker, args=(ngpus_per_node, args), nprocs=ngpus_per_node)
     else:
         # Simply call main_worker function
-        main_worker(args.gpu, ngpus_per_node, args)
+        main_worker(ngpus_per_node, args)
 
 
-def main_worker(gpu, ngpus_per_node, args):
-    args.gpu = gpu
-
+def main_worker(ngpus_per_node, args):
     if args.gpu is not None:
         logger.info(f"Use GPU: {args.gpu} for training.")
 
@@ -145,11 +90,11 @@ def main_worker(gpu, ngpus_per_node, args):
         if args.multiprocessing_distributed:
             # For multiprocessing distributed training, rank needs to be the
             # global rank among all the processes
-            args.rank = args.rank * ngpus_per_node + gpu
+            args.rank = args.rank * ngpus_per_node + args.gpu
         dist.init_process_group(backend=args.dist_backend, init_method=args.dist_url, world_size=args.world_size, rank=args.rank)
     # create model
     generator = configure(args)
-    discriminator = discriminator_for_mnist(image_size=args.image_size, channels=args.channels)
+    discriminator = discriminator_for_mnist(args.image_size, args.channels)
 
     if not torch.cuda.is_available():
         logger.warning("Using CPU, this will be slow.")
@@ -166,8 +111,8 @@ def main_worker(gpu, ngpus_per_node, args):
             # ourselves based on the total number of GPUs we have
             args.batch_size = int(args.batch_size / ngpus_per_node)
             args.workers = int((args.workers + ngpus_per_node - 1) / ngpus_per_node)
-            discriminator = nn.parallel.DistributedDataParallel(module=discriminator, device_ids=[args.gpu])
-            generator = nn.parallel.DistributedDataParallel(module=generator, device_ids=[args.gpu])
+            discriminator = nn.parallel.DistributedDataParallel(discriminator, device_ids=[args.gpu])
+            generator = nn.parallel.DistributedDataParallel(generator, device_ids=[args.gpu])
         else:
             discriminator.cuda()
             generator.cuda()
@@ -193,9 +138,9 @@ def main_worker(gpu, ngpus_per_node, args):
     # Loss of original GAN paper.
     adversarial_criterion = nn.BCELoss().cuda(args.gpu)
 
-    base_image = torch.randn([args.batch_size, 100])
+    noise = torch.randn([args.batch_size, 100])
     if args.gpu is not None:
-        base_image = base_image.cuda(args.gpu)
+        noise = noise.cuda(args.gpu)
 
     # All optimizer function and scheduler function.
     generator_optimizer = torch.optim.Adam(generator.parameters(), lr=args.lr, betas=(0.5, 0.999))
@@ -250,15 +195,15 @@ def main_worker(gpu, ngpus_per_node, args):
         generator.train()
 
         end = time.time()
-        for i, (inputs, target) in enumerate(dataloader):
+        for i, (real, _) in enumerate(dataloader):
             # Move data to special device.
             if args.gpu is not None:
-                inputs = inputs.cuda(args.gpu, non_blocking=True)
-            batch_size = inputs.size(0)
+                real = real.cuda(args.gpu, non_blocking=True)
+            batch_size = real.size(0)
 
             # The real sample label is 1, and the generated sample label is 0.
-            real_label = torch.full((batch_size, 1), 1, dtype=inputs.dtype).cuda(args.gpu, non_blocking=True)
-            fake_label = torch.full((batch_size, 1), 0, dtype=inputs.dtype).cuda(args.gpu, non_blocking=True)
+            real_label = torch.full((batch_size, 1), 1, dtype=real.dtype).cuda(args.gpu, non_blocking=True)
+            fake_label = torch.full((batch_size, 1), 0, dtype=real.dtype).cuda(args.gpu, non_blocking=True)
 
             noise = torch.randn([batch_size, 100])
             # Move data to special device.
@@ -272,7 +217,7 @@ def main_worker(gpu, ngpus_per_node, args):
             discriminator.zero_grad()
 
             # Train with real.
-            real_output = discriminator(inputs)
+            real_output = discriminator(real)
             d_loss_real = adversarial_criterion(real_output, real_label)
             d_loss_real.backward()
             d_x = real_output.mean()
@@ -305,11 +250,11 @@ def main_worker(gpu, ngpus_per_node, args):
             end = time.time()
 
             # measure accuracy and record loss
-            d_losses.update(d_loss.item(), inputs.size(0))
-            g_losses.update(g_loss.item(), inputs.size(0))
-            d_x_losses.update(d_x.item(), inputs.size(0))
-            d_g_z1_losses.update(d_g_z1.item(), inputs.size(0))
-            d_g_z2_losses.update(d_g_z2.item(), inputs.size(0))
+            d_losses.update(d_loss.item(), real.size(0))
+            g_losses.update(g_loss.item(), real.size(0))
+            d_x_losses.update(d_x.item(), real.size(0))
+            d_g_z1_losses.update(d_g_z1.item(), real.size(0))
+            d_g_z2_losses.update(d_g_z2.item(), real.size(0))
 
             iters = i + epoch * len(dataloader) + 1
             writer.add_scalar("Train/D_Loss", d_loss.item(), iters)
@@ -324,7 +269,9 @@ def main_worker(gpu, ngpus_per_node, args):
 
         # Each Epoch validates the model once.
         with torch.no_grad():
-            sr = generator(base_image)
+            # Switch model to eval mode.
+            generator.eval()
+            sr = generator(noise)
             vutils.save_image(sr.detach(), os.path.join("runs", f"GAN_epoch_{epoch}.png"), normalize=True)
 
         if not args.multiprocessing_distributed or (args.multiprocessing_distributed and args.rank % ngpus_per_node == 0):
@@ -335,6 +282,52 @@ def main_worker(gpu, ngpus_per_node, args):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--arch", default="gan", type=str, choices=model_names,
+                        help="Model architecture: " +
+                             " | ".join(model_names) +
+                             ". (Default: `gan`)")
+    parser.add_argument("data", metavar="DIR",
+                        help="Path to dataset.")
+    parser.add_argument("--workers", default=4, type=int,
+                        help="Number of data loading workers. (Default: 4)")
+    parser.add_argument("--epochs", default=128, type=int,
+                        help="Number of total epochs to run. (Default: 128)")
+    parser.add_argument("--start-epoch", default=0, type=int,
+                        help="Manual epoch number (useful on restarts). (Default: 0)")
+    parser.add_argument("-b", "--batch-size", default=64, type=int,
+                        help="The batch size of the dataset. (Default: 64)")
+    parser.add_argument("--lr", default=0.0002, type=float,
+                        help="Learning rate. (Default: 0.0002)")
+    parser.add_argument("--image-size", default=28, type=int,
+                        help="Image size of high resolution image. (Default: 28)")
+    parser.add_argument("--channels", default=1, type=int,
+                        help="The number of channels of the image. (Default: 1)")
+    parser.add_argument("--netD", default="", type=str,
+                        help="Path to Discriminator checkpoint.")
+    parser.add_argument("--netG", default="", type=str,
+                        help="Path to Generator checkpoint.")
+    parser.add_argument("--pretrained", dest="pretrained", action="store_true",
+                        help="Use pre-trained model.")
+    parser.add_argument("--world-size", default=-1, type=int,
+                        help="Number of nodes for distributed training.")
+    parser.add_argument("--rank", default=-1, type=int,
+                        help="Node rank for distributed training. (Default: -1)")
+    parser.add_argument("--dist-url", default="tcp://59.110.31.55:12345", type=str,
+                        help="url used to set up distributed training. (Default: `tcp://59.110.31.55:12345`)")
+    parser.add_argument("--dist-backend", default="nccl", type=str,
+                        help="Distributed backend. (Default: `nccl`)")
+    parser.add_argument("--seed", default=None, type=int,
+                        help="Seed for initializing training.")
+    parser.add_argument("--gpu", default=None, type=int,
+                        help="GPU id to use.")
+    parser.add_argument("--multiprocessing-distributed", action="store_true",
+                        help="Use multi-processing distributed training to launch "
+                             "N processes per node, which has N GPUs. This is the "
+                             "fastest way to use PyTorch for either single node or "
+                             "multi node data parallel training.")
+    args = parser.parse_args()
+
     print("##################################################\n")
     print("Run Training Engine.\n")
 
@@ -343,9 +336,9 @@ if __name__ == "__main__":
 
     logger.info("TrainingEngine:")
     print("\tAPI version .......... 0.2.0")
-    print("\tBuild ................ 2021.05.27")
+    print("\tBuild ................ 2021.06.02")
     print("##################################################\n")
 
-    main()
+    main(args)
 
     logger.info("All training has been completed successfully.\n")

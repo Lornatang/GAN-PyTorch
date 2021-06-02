@@ -11,7 +11,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-
 """File for accessing GAN via PyTorch Hub https://pytorch.org/hub/
 Usage:
     import torch
@@ -29,23 +28,25 @@ model_urls = {
 dependencies = ["torch"]
 
 
-def create(arch, image_size, channels, pretrained, progress):
-    """ Creates a specified GAN model
+def _gan(arch: str, image_size: int, channels: int, pretrained: bool, progress: bool) -> Generator:
+    r""" Used to create GAN model.
 
     Args:
-        arch (str): Arch name of model.
-        image_size (int): Number of image size.
-        channels (int): Number of input channels.
-        pretrained (bool): Load pretrained weights into the model.
-        progress (bool): Show progress bar when downloading weights.
+        arch (str): GAN model architecture name.
+        image_size (int): The size of the image.
+        channels (int): The channels of the image.
+        pretrained (bool): If True, returns a model pre-trained on MNIST.
+        progress (bool): If True, displays a progress bar of the download to stderr.
 
     Returns:
-        PyTorch model.
+        Generator model.
     """
     model = Generator(image_size, channels)
+
     if pretrained:
         state_dict = load_state_dict_from_url(model_urls[arch], progress=progress, map_location=torch.device("cpu"))
         model.load_state_dict(state_dict)
+
     return model
 
 
@@ -56,4 +57,6 @@ def gan(pretrained: bool = False, progress: bool = True) -> Generator:
         pretrained (bool): If True, returns a model pre-trained on ImageNet.
         progress (bool): If True, displays a progress bar of the download to stderr.
     """
-    return create("gan", 28, 1, pretrained, progress)
+    model = _gan("gan", 28, 1, pretrained, progress)
+
+    return model

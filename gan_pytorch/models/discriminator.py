@@ -41,8 +41,8 @@ class DiscriminatorForMNIST(nn.Module):
         self._initialize_weights()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = torch.flatten(x, 1)
-        out = self.main(x)
+        out = torch.flatten(x, 1)
+        out = self.main(out)
 
         return out
 

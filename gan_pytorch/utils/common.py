@@ -14,8 +14,6 @@
 import logging
 import os
 
-import torch
-
 import gan_pytorch.models as models
 
 __all__ = [
