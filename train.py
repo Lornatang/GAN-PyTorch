@@ -138,9 +138,9 @@ def main_worker(ngpus_per_node, args):
     # Loss of original GAN paper.
     adversarial_criterion = nn.BCELoss().cuda(args.gpu)
 
-    noise = torch.randn([args.batch_size, 100])
+    fixed_noise = torch.randn([args.batch_size, 100])
     if args.gpu is not None:
-        noise = noise.cuda(args.gpu)
+        fixed_noise = fixed_noise.cuda(args.gpu)
 
     # All optimizer function and scheduler function.
     generator_optimizer = torch.optim.Adam(generator.parameters(), lr=args.lr, betas=(0.5, 0.999))
@@ -271,7 +271,7 @@ def main_worker(ngpus_per_node, args):
         with torch.no_grad():
             # Switch model to eval mode.
             generator.eval()
-            sr = generator(noise)
+            sr = generator(fixed_noise)
             vutils.save_image(sr.detach(), os.path.join("runs", f"GAN_epoch_{epoch}.png"), normalize=True)
 
         if not args.multiprocessing_distributed or (args.multiprocessing_distributed and args.rank % ngpus_per_node == 0):
