@@ -2,8 +2,7 @@
 
 ## Overview
 
-This repository contains an op-for-op PyTorch reimplementation  
-of [Generative Adversarial Networks](http://arxiv.org/pdf/1406.2661).
+This repository contains an op-for-op PyTorch reimplementation  of [Generative Adversarial Networks](http://arxiv.org/pdf/1406.2661).
 
 ### Table of contents
 
