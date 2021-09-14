@@ -30,9 +30,9 @@ class Discriminator(nn.Module):
         self.main = nn.Sequential(
             # Input: channels * image size * image size.
             nn.Linear(1 * 28 * 28, 512, bias=True),
-            nn.LeakyReLU(negative_slope=0.2, inplace=True),
+            nn.LeakyReLU(0.2, True),
             nn.Linear(512, 256, bias=True),
-            nn.LeakyReLU(negative_slope=0.2, inplace=True),
+            nn.LeakyReLU(0.2, True),
             nn.Linear(256, 1, bias=True),
             nn.Sigmoid()
         )
@@ -49,19 +49,19 @@ class Generator(nn.Module):
         super(Generator, self).__init__()
         self.main = nn.Sequential(
             nn.Linear(100, 128, bias=True),
-            nn.LeakyReLU(negative_slope=0.2, inplace=True),
+            nn.LeakyReLU(0.2, True),
 
             nn.Linear(128, 256, bias=False),
             nn.BatchNorm1d(256),
-            nn.LeakyReLU(negative_slope=0.2, inplace=True),
+            nn.LeakyReLU(0.2, True),
 
             nn.Linear(256, 512, bias=False),
             nn.BatchNorm1d(512),
-            nn.LeakyReLU(negative_slope=0.2, inplace=True),
+            nn.LeakyReLU(0.2, True),
 
             nn.Linear(512, 1024, bias=False),
             nn.BatchNorm1d(1024),
-            nn.LeakyReLU(negative_slope=0.2, inplace=True),
+            nn.LeakyReLU(0.2, True),
 
             # Output: channels * image size * image size.
             nn.Linear(1024, 1 * 28 * 28, bias=True),
