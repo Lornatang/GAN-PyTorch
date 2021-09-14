@@ -32,7 +32,7 @@ from model import Generator
 torch.manual_seed(0)                       # Set random seed.
 device           = torch.device("cuda:0")  # Use the first GPU for processing by default.
 cudnn.benchmark  = True                    # If the dimension or type of the input data of the network does not change much, turn it on, otherwise turn it off.
-mode             = "train"                 # Run mode. Specific mode loads specific variables.
+mode             = "valid"                 # Run mode. Specific mode loads specific variables.
 exp_name         = "exp000"                # Experiment name.
 
 # ==============================================================================
@@ -41,7 +41,7 @@ exp_name         = "exp000"                # Experiment name.
 if mode == "train":
     # Configure dataset.
     dataset_dir           = "data"                                # The address of the training dataset.
-    batch_size            = 128                                   # Training data batch size.
+    batch_size            = 128                                   # Training batch size.
 
     # Configure model.
     discriminator         = Discriminator().to(device)            # Load the discriminator model.
@@ -51,7 +51,7 @@ if mode == "train":
     start_epoch           = 0                                     # The number of initial iterations of the adversarial network training. When set to 0, it means incremental training.
     resume                = False                                 # Set to `True` to continue training from the previous training progress.
     resume_d_weight       = ""                                    # Restore the weight of the discriminator model during training.
-    resume_g_weight       = ""                                    # Restore the weight of the generative model during training.
+    resume_g_weight       = ""                                    # Restore the weight of the generator model during training.
 
     # Train epochs.
     epochs                = 128                                   # The total number of cycles in the training phase of the adversarial network.
@@ -74,9 +74,9 @@ if mode == "train":
 #                              Validate configure
 # ==============================================================================
 if mode == "valid":
-    exp_dir      = os.path.join("results", "test", exp_name)  # Additional variables.
+    # Additional variables.
+    exp_dir      = os.path.join("results", "test", exp_name)
 
-    model        = Generator().to(device)                     # Load model.
-    model_path   = f"results/{exp_name}/g-last.pth"           # Model weight address.
-    dataset_dir  = f"data"                                    # Dataset address.
-
+    # Load model.
+    model        = Generator().to(device)
+    model_path   = f"samples/{exp_name}/g_epoch43.pth"
