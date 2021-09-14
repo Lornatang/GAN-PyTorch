@@ -32,7 +32,7 @@ from model import Generator
 torch.manual_seed(0)                       # Set random seed.
 device           = torch.device("cuda:0")  # Use the first GPU for processing by default.
 cudnn.benchmark  = True                    # If the dimension or type of the input data of the network does not change much, turn it on, otherwise turn it off.
-mode             = "valid"                 # Run mode. Specific mode loads specific variables.
+mode             = "train"                 # Run mode. Specific mode loads specific variables.
 exp_name         = "exp000"                # Experiment name.
 
 # ==============================================================================
@@ -79,4 +79,4 @@ if mode == "valid":
 
     # Load model.
     model        = Generator().to(device)
-    model_path   = f"samples/{exp_name}/g_epoch43.pth"
+    model_path   = f"samples/{exp_name}/g-last.pth"
