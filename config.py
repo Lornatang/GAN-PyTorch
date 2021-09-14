@@ -40,24 +40,24 @@ exp_name         = "exp000"                # Experiment name.
 # ==============================================================================
 if mode == "train":
     # Configure dataset.
-    dataset_dir           = "data"                                # The address of the training dataset.
-    batch_size            = 128                                   # Training batch size.
+    dataset_dir           = "data"                      # The address of the training dataset.
+    batch_size            = 128                         # Training batch size.
 
     # Configure model.
-    discriminator         = Discriminator().to(device)            # Load the discriminator model.
-    generator             = Generator().to(device)                # Load the generative model.
+    discriminator         = Discriminator().to(device)  # Load the discriminator model.
+    generator             = Generator().to(device)      # Load the generative model.
 
     # Resume training.
-    start_epoch           = 0                                     # The number of initial iterations of the adversarial network training. When set to 0, it means incremental training.
-    resume                = False                                 # Set to `True` to continue training from the previous training progress.
-    resume_d_weight       = ""                                    # Restore the weight of the discriminator model during training.
-    resume_g_weight       = ""                                    # Restore the weight of the generator model during training.
+    start_epoch           = 0                           # The number of initial iterations of the adversarial network training. When set to 0, it means incremental training.
+    resume                = False                       # Set to `True` to continue training from the previous training progress.
+    resume_d_weight       = ""                          # Restore the weight of the discriminator model during training.
+    resume_g_weight       = ""                          # Restore the weight of the generator model during training.
 
     # Train epochs.
-    epochs                = 128                                   # The total number of cycles in the training phase of the adversarial network.
+    epochs                = 128                         # The total number of cycles in the training phase of the adversarial network.
 
     # Loss function.
-    criterion = nn.BCELoss().to(device)                           # Adversarial loss.
+    criterion = nn.BCELoss().to(device)                 # Adversarial loss.
 
     # Optimizer.
     d_optimizer           = optim.Adam(discriminator.parameters(), 0.0002, (0.5, 0.999))  # Discriminator learning rate during adversarial network training.
