@@ -29,6 +29,8 @@ Modify the contents of the file as follows.
 2. `config.py` line 79 `model_path=f"results/{exp_name}/g-last.pth"` change to `model_path=f"<YOUR-WEIGHTS-PATH>.pth"`;
 3. Run `python validate.py`.
 
+<span align="center"><img src="assets/mnist.gif"/></span>
+
 ### Train
 
 Modify the contents of the file as follows.
