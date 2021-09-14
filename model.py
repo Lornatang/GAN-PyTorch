@@ -29,16 +29,13 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
         self.main = nn.Sequential(
             # Input: channels * image size * image size.
-            nn.Linear(1 * 28 * 28, 512),
+            nn.Linear(1 * 28 * 28, 512, bias=True),
             nn.LeakyReLU(negative_slope=0.2, inplace=True),
-            nn.Linear(512, 256),
+            nn.Linear(512, 256, bias=True),
             nn.LeakyReLU(negative_slope=0.2, inplace=True),
-            nn.Linear(256, 1),
+            nn.Linear(256, 1, bias=True),
             nn.Sigmoid()
         )
-
-        # Initializing all neural network weights.
-        self._initialize_weights()
 
     def forward(self, x: Tensor) -> Tensor:
         out = torch.flatten(x, 1)
@@ -46,61 +43,37 @@ class Discriminator(nn.Module):
 
         return out
 
-    def _initialize_weights(self) -> None:
-        for m in self.modules():
-            if isinstance(m, nn.Linear):
-                nn.init.kaiming_normal_(m.weight)
-                m.weight.data *= 0.1
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-
 
 class Generator(nn.Module):
     def __init__(self) -> None:
         super(Generator, self).__init__()
         self.main = nn.Sequential(
-            nn.Linear(100, 128),
+            nn.Linear(100, 128, bias=True),
             nn.LeakyReLU(negative_slope=0.2, inplace=True),
 
-            nn.Linear(128, 256),
+            nn.Linear(128, 256, bias=False),
             nn.BatchNorm1d(256),
             nn.LeakyReLU(negative_slope=0.2, inplace=True),
 
-            nn.Linear(256, 512),
+            nn.Linear(256, 512, bias=False),
             nn.BatchNorm1d(512),
             nn.LeakyReLU(negative_slope=0.2, inplace=True),
 
-            nn.Linear(512, 1024),
+            nn.Linear(512, 1024, bias=False),
             nn.BatchNorm1d(1024),
             nn.LeakyReLU(negative_slope=0.2, inplace=True),
 
             # Output: channels * image size * image size.
-            nn.Linear(1024, 1 * 28 * 28),
+            nn.Linear(1024, 1 * 28 * 28, bias=True),
             nn.Tanh()
         )
 
-        # Init all layer weights.
-        self._initialize_weights()
+    def forward(self, x: Tensor) -> Tensor:
+        return self._forward_impl(x)
 
-    # The tracking operator in the PyTorch model must be written like this.
+    # Support PyTorch.script function.
     def _forward_impl(self, x: Tensor) -> Tensor:
         out = self.main(x)
         out = out.reshape(out.size(0), 1, 28, 28)
 
         return out
-
-    def forward(self, x: Tensor) -> Tensor:
-        return self._forward_impl(x)
-
-    def _initialize_weights(self) -> None:
-        for m in self.modules():
-            if isinstance(m, nn.BatchNorm2d):
-                nn.init.normal_(m.weight, 1.0, 0.02)
-                m.weight.data *= 0.1
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
-                nn.init.kaiming_normal_(m.weight)
-                m.weight.data *= 0.1
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
