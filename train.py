@@ -17,7 +17,6 @@
 # ============================================================================
 import torchvision
 import torchvision.transforms as transforms
-import torchvision.utils as vutils
 from torch.utils.data import DataLoader
 
 from config import *
@@ -30,9 +29,9 @@ def train(dataloader, epoch) -> None:
         dataloader (torch.utils.data.DataLoader): The loader of the training dataset.
         epoch (int): number of training cycles.
     """
-    # Calculate how many iterations there are under Epoch.
+    # Calculate how many iterations there are under epoch.
     batches = len(dataloader)
-    # Put the two models in training mode.
+    # Set two models in training mode.
     discriminator.train()
     generator.train()
 
@@ -40,37 +39,37 @@ def train(dataloader, epoch) -> None:
         # Copy the data to the specified device.
         real = real.to(device)
         label_size = real.size(0)
-        # Create label. Set the real sample label to 1, and the false sample label to 0.
+        # Create label. Set the real sample label to 1, and the fake sample label to 0.
         real_label = torch.full([label_size, 1], 1.0, dtype=real.dtype, device=device)
         fake_label = torch.full([label_size, 1], 0.0, dtype=real.dtype, device=device)
-        # Create an image that conforms to the Gaussian distribution
+        # Create an image that conforms to the Gaussian distribution.
         noise = torch.randn([label_size, 100], device=device)
 
         # Initialize the discriminator model gradient.
         discriminator.zero_grad()
-        # Calculate the loss of the discriminator model on the image.
+        # Calculate the loss of the discriminator model on the real image.
         output = discriminator(real)
         d_loss_real = criterion(output, real_label)
         d_loss_real.backward()
         d_real = output.mean().item()
-        # Generate fake images.
+        # Generate a fake image.
         fake = generator(noise)
-        # Calculate the loss of the discriminator model on the image.
+        # Calculate the loss of the discriminator model on the fake image.
         output = discriminator(fake.detach())
         d_loss_fake = criterion(output, fake_label)
         d_loss_fake.backward()
         d_fake1 = output.mean().item()
-        # Update the weights of the authentication model.
+        # Update the weights of the discriminator model.
         d_loss = d_loss_real + d_loss_fake
         d_optimizer.step()
 
         # Initialize the generator model gradient.
         generator.zero_grad()
-        # Calculate the loss of the discriminator model on the image.
+        # Calculate the loss of the discriminator model on the fake image.
         output = discriminator(fake)
         # Adversarial loss.
         g_loss = criterion(output, real_label)
-        # Update the weights of the generated model.
+        # Update the weights of the generator model.
         g_loss.backward()
         g_optimizer.step()
         d_fake2 = output.mean().item()
@@ -82,7 +81,7 @@ def train(dataloader, epoch) -> None:
         writer.add_scalar("Train_Adversarial/D_Real", d_real, iters)
         writer.add_scalar("Train_Adversarial/D_Fake1", d_fake1, iters)
         writer.add_scalar("Train_Adversarial/D_Fake2", d_fake2, iters)
-        # Print the loss function every ten iterations and the last iteration in this Epoch.
+        # Print the loss function every ten iterations and the last iteration in this epoch.
         if (index + 1) % 10 == 0 or (index + 1) == batches:
             print(f"Train stage: adversarial "
                   f"Epoch[{epoch + 1:04d}/{epochs:04d}]({index + 1:05d}/{batches:05d}) "
@@ -100,7 +99,7 @@ def main() -> None:
     # Create an image that conforms to the Gaussian distribution.
     fixed_noise = torch.randn([batch_size, 100], device=device)
 
-    # Load the dataset.
+    # Load dataset.
     dataset = torchvision.datasets.MNIST(root=dataset_dir,
                                          train=True,
                                          transform=transforms.Compose([
@@ -116,20 +115,19 @@ def main() -> None:
             discriminator.load_state_dict(torch.load(resume_d_weight))
             generator.load_state_dict(torch.load(resume_g_weight))
 
-    # Train model stage.
     for epoch in range(start_epoch, epochs):
-        # Train each Epoch to generate a model.
+        # Train each epoch to generate a model.
         train(dataloader, epoch)
-        # Save the weight of the model under Epoch.
+        # Save the weight of the model under epoch.
         torch.save(discriminator.state_dict(), os.path.join(exp_dir1, f"d_epoch{epoch + 1}.pth"))
         torch.save(generator.state_dict(), os.path.join(exp_dir1, f"g_epoch{epoch + 1}.pth"))
 
-        # Each Epoch validates the model once.
+        # Each epoch validates the model once.
         with torch.no_grad():
             # Switch model to eval mode.
             generator.eval()
-            fake = generator(fixed_noise)
-            vutils.save_image(fake.detach(), os.path.join(exp_dir1, f"epoch_{epoch + 1}.bmp"), normalize=True)
+            fake = generator(fixed_noise).detach()
+            torchvision.utils.save_image(fake, os.path.join(exp_dir1, f"epoch_{epoch + 1}.bmp"), normalize=True)
 
     # Save the weight of the model under the last Epoch in this stage.
     torch.save(discriminator.state_dict(), os.path.join(exp_dir2, "d-last.pth"))
